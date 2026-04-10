@@ -463,14 +463,15 @@ tbody td { padding: 11px 14px; font-size: 13px; vertical-align: middle; }
         <label>Responsável</label>
         <select id="f-resp">
           <option value="">Selecionar...</option>
-          <option>Sandra — Itaú</option>
-          <option>Paulo — BV / 99</option>
-          <option>Victor — Monitoria</option>
-          <option>Ricardo — Mercado Livre</option>
-          <option>Gabriel — Produção</option>
-          <option>Karina — Claro Brasil</option>
-          <option>Antonio — Neoenergia</option>
-          <option>Aparecida — Automação</option>
+          <option>Bruno — Porto</option>
+          <option>Pedro — Porto</option>
+          <option>João Marcos — CRF</option>
+          <option>João Carlos — CRF/Sams</option>
+          <option>Marcos — CRF/Banco</option>
+          <option>Jadson — Stone</option>
+          <option>Jadson — Ton</option>
+          <option>Andressa — Stone</option>
+          <option>Vitor — Ton</option>
           <option>Outro</option>
         </select>
       </div>
@@ -488,7 +489,7 @@ tbody td { padding: 11px 14px; font-size: 13px; vertical-align: middle; }
       </div>
       <div class="form-group">
         <label>Produto / Cliente</label>
-        <input type="text" id="f-produto" placeholder="Ex: Itaú, BV, 99...">
+        <input type="text" id="f-produto" placeholder="Ex: Porto, Stone, CRF,...">
       </div>
       <div class="form-group">
         <label>Status geral do período</label>
@@ -506,7 +507,7 @@ tbody td { padding: 11px 14px; font-size: 13px; vertical-align: middle; }
   <div class="card" style="margin-bottom:20px;">
     <div class="card-title"><span class="accent" style="background:var(--lime)"></span>Entregáveis deste mês</div>
     <div class="pills" id="pills-container">
-      <div class="pill" onclick="tp(this)">✅ Processo documentado</div>
+      <div class="pill" onclick="tp(this)">✅ Processo novo</div>
       <div class="pill" onclick="tp(this)">📈 Melhoria entregue</div>
       <div class="pill" onclick="tp(this)">🔁 Prática escalável</div>
       <div class="pill" onclick="tp(this)">⚡ Alerta preventivo</div>
@@ -514,6 +515,7 @@ tbody td { padding: 11px 14px; font-size: 13px; vertical-align: middle; }
       <div class="pill" onclick="tp(this)">📋 Plano de ação</div>
       <div class="pill" onclick="tp(this)">👥 Feedback formal</div>
       <div class="pill" onclick="tp(this)">🏆 Case documentado</div>
+      <div class="pill" onclick="tp(this)">📈 Relatório novo</div>
     </div>
   </div>
 
@@ -701,6 +703,7 @@ tbody td { padding: 11px 14px; font-size: 13px; vertical-align: middle; }
           <option>📉 Redução de erro</option>
           <option>📈 KPI</option>
           <option>⚡ Esforço</option>
+          <option>💰 Valor Percebido</option>
         </select>
       </div>
     </div>
