@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Qualidade AeC 2026 — Gerência Cida Santos</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap');
+
+:root {
+  --navy: #003A5D;
+  --teal: #0073B7;
+  --cyan: #00AEEF;
+  --magenta: #E8176C;
+  --yellow: #F5C400;
+  --lime: #8DC63F;
+  --white: #FFFFFF;
+  --offwhite: #F2F6FA;
+  --gray: #8A99A8;
+  --dark: #0C1E2D;
+  --border: #D4E2EE;
+  --card: #FFFFFF;
+  --shadow: 0 2px 12px rgba(0,58,93,.08);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--offwhite);
+  color: var(--dark);
+  min-height: 100vh;
+}
+
+/* ── NAV ── */
+.nav {
+  background: var(--navy);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
+  height: 66px;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: 0 3px 20px rgba(0,30,50,.35);
+}
+.nav-brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+.nav-brand .title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--white);
+  letter-spacing: .4px;
+}
+.nav-brand .title span { color: var(--cyan); }
+.nav-brand .sub {
+  font-size: 10px;
+  color: rgba(255,255,255,.45);
+  font-weight: 500;
+  letter-spacing: .8px;
+  text-transform: uppercase;
+}
+.nav-tabs { display: flex; gap: 4px; }
+.tab-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,.5);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+.tab-btn:hover { background: rgba(255,255,255,.1); color: var(--white); }
+.tab-btn.active { background: var(--cyan); color: var(--white); }
+.tab-btn.locked { border: 1px solid rgba(232,23,108,.5); color: rgba(232,23,108,.8); }
+.tab-btn.locked:hover, .tab-btn.locked.active { background: var(--magenta); color: var(--white); border-color: var(--magenta); }
+
+/* ── PAGES ── */
+.page { display: none; padding: 36px 40px; max-width: 1300px; margin: 0 auto; animation: fadeUp .3s ease; }
+.page.active { display: block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+
+/* ── PAGE HEADER ── */
+.pg-header { margin-bottom: 28px; display: flex; justify-content: space-between; align-items: flex-end; }
+.pg-header h1 { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--navy); }
+.pg-header p { color: var(--gray); font-size: 13px; margin-top: 3px; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--card);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--navy);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-title .accent {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── FORM ── */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group.full { grid-column: 1/-1; }
+.form-group.third { grid-column: span 1; }
+label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .7px;
+  color: var(--gray);
+}
+input[type=text], input[type=password], input[type=number], select, textarea {
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  color: var(--dark);
+  background: var(--offwhite);
+  transition: border-color .2s, background .2s;
+  outline: none;
+  width: 100%;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--cyan); background: #fff; }
+textarea { resize: vertical; min-height: 76px; }
+
+/* range slider */
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%; height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--teal);
+  border: 3px solid white;
+  box-shadow: 0 1px 6px rgba(0,115,183,.4);
+}
+
+/* ── BADGES ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 700;
+}
+.badge-green { background: #E6F9ED; color: #1A9E43; }
+.badge-yellow { background: #FFF9E0; color: #B8890A; }
+.badge-red { background: #FFEDF4; color: #C8104A; }
+.badge-blue { background: #E5F4FF; color: #005CA8; }
+.badge-gray { background: var(--offwhite); color: var(--gray); }
+
+/* ── BUTTONS ── */
+.btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: none;
+  transition: all .2s;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-primary { background: var(--teal); color: #fff; }
+.btn-primary:hover { background: #005c96; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,115,183,.3); }
+.btn-magenta { background: var(--magenta); color: #fff; }
+.btn-magenta:hover { background: #c0125c; }
+.btn-ghost { background: none; border: 1.5px solid var(--border); color: var(--gray); }
+.btn-ghost:hover { border-color: var(--teal); color: var(--teal); }
+.btn-sm { padding: 6px 13px; font-size: 12px; border-radius: 8px; }
+
+/* ── PROGRESS ── */
+.prog-wrap { display: flex; align-items: center; gap: 12px; }
+.prog-bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 4px; transition: width .6s cubic-bezier(.4,0,.2,1); }
+.prog-label { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; min-width: 38px; text-align: right; }
+
+/* ── KPI STRIP ── */
+.kpi-strip { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
+.kpi-card {
+  background: var(--card);
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  padding: 20px 20px 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+.kpi-card::before { content:''; position:absolute; bottom:0; left:0; width:100%; height:3px; }
+.kpi-card.k1::before { background: var(--cyan); }
+.kpi-card.k2::before { background: var(--teal); }
+.kpi-card.k3::before { background: var(--magenta); }
+.kpi-card.k4::before { background: var(--lime); }
+.kpi-lbl { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.7px; color:var(--gray); }
+.kpi-val { font-family:'Syne',sans-serif; font-size:34px; font-weight:800; color:var(--navy); margin:2px 0 1px; }
+.kpi-sub { font-size:11px; color:var(--gray); }
+
+/* ── TABLE ── */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead th {
+  font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .7px;
+  color: var(--gray); padding: 10px 14px; text-align: left;
+  border-bottom: 2px solid var(--border); white-space: nowrap;
+}
+tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+tbody tr:hover { background: var(--offwhite); }
+tbody td { padding: 11px 14px; font-size: 13px; vertical-align: middle; }
+
+/* ── PILL SELECTOR ── */
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill {
+  background: var(--offwhite); border: 1.5px solid var(--border);
+  border-radius: 20px; padding: 5px 13px;
+  font-size: 12px; font-weight: 600; color: var(--navy);
+  cursor: pointer; transition: all .18s; user-select: none;
+}
+.pill:hover { border-color: var(--teal); color: var(--teal); }
+.pill.on { background: var(--teal); color: white; border-color: var(--teal); }
+
+/* ── SECTION DIVIDER ── */
+.divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 28px; right: 28px;
+  background: var(--navy); color: white;
+  padding: 14px 22px; border-radius: 12px;
+  font-size: 14px; font-weight: 500;
+  box-shadow: 0 8px 28px rgba(0,0,0,.25);
+  z-index: 999;
+  transform: translateY(80px); opacity: 0;
+  transition: all .3s cubic-bezier(.4,0,.2,1);
+}
+.toast.show { transform: none; opacity: 1; }
+.toast.success { border-left: 4px solid var(--lime); }
+.toast.error { border-left: 4px solid var(--magenta); }
+
+/* ── PASSWORD OVERLAY ── */
+.pw-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,20,35,.8);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 500; backdrop-filter: blur(8px);
+}
+.pw-box {
+  background: white; border-radius: 20px; padding: 44px 40px;
+  width: 360px; text-align: center;
+  box-shadow: 0 30px 80px rgba(0,0,0,.35);
+}
+.pw-box .lock-icon { font-size: 36px; margin-bottom: 14px; }
+.pw-box h2 { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; color:var(--navy); }
+.pw-box p { font-size:13px; color:var(--gray); margin:6px 0 22px; line-height:1.5; }
+.pw-box input { text-align:center; letter-spacing:4px; font-size:18px; margin-bottom:14px; }
+.pw-err { color:var(--magenta); font-size:12px; font-weight:600; margin-top:8px; display:none; }
+
+/* ── EXEC PAGE ── */
+.exec-hero {
+  background: linear-gradient(135deg, var(--navy) 0%, #004d7a 55%, #006fa8 100%);
+  border-radius: 20px; padding: 48px 52px;
+  color: white; position: relative; overflow: hidden;
+  margin-bottom: 28px;
+}
+.exec-hero::before {
+  content:''; position:absolute; right:-80px; top:-80px;
+  width:340px; height:340px;
+  background: radial-gradient(circle, rgba(0,174,239,.2) 0%, transparent 70%);
+  border-radius:50%;
+}
+.exec-hero::after {
+  content:''; position:absolute; left:30%; bottom:-100px;
+  width:280px; height:280px;
+  background: radial-gradient(circle, rgba(232,23,108,.15) 0%, transparent 70%);
+  border-radius:50%;
+}
+.exec-tag {
+  display: inline-block;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 20px; padding: 4px 14px;
+  font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+  text-transform: uppercase; margin-bottom: 16px; color: rgba(255,255,255,.85);
+}
+.exec-hero h1 { font-family:'Syne',sans-serif; font-size:34px; font-weight:800; line-height:1.1; }
+.exec-hero .subtitle { opacity:.65; margin-top:8px; font-size:14px; }
+
+.exec-grid3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:18px; margin-bottom:24px; }
+.exec-okr-block {
+  background:white; border-radius:16px; border:1px solid var(--border);
+  padding:24px; box-shadow:var(--shadow); position:relative; overflow:hidden;
+}
+.exec-okr-block .side-bar { position:absolute; top:0; right:0; width:5px; height:100%; border-radius:0 16px 16px 0; }
+
+.score-ring {
+  width:72px; height:72px; border-radius:50%;
+  border: 5px solid; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Syne',sans-serif; font-size:19px; font-weight:800;
+}
+.ring-green { border-color:var(--lime); color:var(--lime); }
+.ring-yellow { border-color:var(--yellow); color:#c49000; }
+.ring-red { border-color:var(--magenta); color:var(--magenta); }
+
+/* Insight box */
+.insight-highlight {
+  background: linear-gradient(135deg, #FFF8E1, #FFFDF0);
+  border: 2px solid var(--yellow);
+  border-radius: 14px; padding: 20px 24px;
+  margin-bottom: 20px;
+}
+.insight-highlight .ih-label {
+  font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.8px;
+  color:var(--yellow); margin-bottom:6px;
+}
+.insight-highlight .ih-text {
+  font-size:15px; font-weight:500; color:var(--navy); line-height:1.6;
+}
+.insight-highlight .ih-month {
+  font-size:11px; color:var(--gray); margin-top:6px;
+}
+
+.best-year {
+  background: linear-gradient(135deg, var(--navy), #005083);
+  border-radius: 14px; padding: 24px;
+  color: white; margin-bottom: 24px;
+}
+.best-year .by-label { font-size:10px; font-weight:700; letter-spacing:1px; text-transform:uppercase; opacity:.6; margin-bottom:6px; }
+.best-year .by-text { font-family:'Syne',sans-serif; font-size:18px; font-weight:800; line-height:1.4; }
+.best-year .by-sub { font-size:12px; opacity:.6; margin-top:6px; }
+
+/* Timeline */
+.timeline { display:flex; flex-direction:column; }
+.tl-item { display:flex; gap:16px; padding:14px 0; border-bottom:1px solid var(--border); }
+.tl-item:last-child { border-bottom:none; }
+.tl-dot { width:10px; height:10px; border-radius:50%; background:var(--cyan); margin-top:5px; flex-shrink:0; }
+.tl-month { font-family:'Syne',sans-serif; font-size:10px; font-weight:700; color:var(--teal); text-transform:uppercase; letter-spacing:.8px; min-width:32px; margin-top:3px; }
+.tl-body { flex:1; }
+.tl-body strong { font-size:13px; font-weight:600; color:var(--navy); }
+.tl-body p { font-size:12px; color:var(--gray); margin-top:2px; line-height:1.5; }
+
+/* Detail view */
+.detail-card {
+  background:white; border-radius:14px; border:1px solid var(--border);
+  padding:20px; margin-bottom:14px; cursor:pointer;
+  transition: box-shadow .2s, border-color .2s;
+}
+.detail-card:hover { box-shadow:0 4px 20px rgba(0,58,93,.1); border-color:var(--cyan); }
+.detail-card .dc-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.detail-card .dc-title { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:var(--navy); }
+.detail-body { display:none; padding-top:14px; border-top:1px solid var(--border); margin-top:10px; }
+.detail-body.open { display:block; }
+.dl-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+.dl-item label { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.6px; color:var(--gray); display:block; margin-bottom:3px; }
+.dl-item p { font-size:13px; color:var(--dark); line-height:1.5; }
+.dl-item.full { grid-column:1/-1; }
+
+/* Config banner */
+.config-banner {
+  background: linear-gradient(135deg, #FFF3E0, #FFF8F0);
+  border: 2px solid var(--yellow);
+  border-radius: 14px; padding: 20px 24px;
+  margin-bottom: 24px; display:flex; gap:16px; align-items:flex-start;
+}
+.config-banner .icon { font-size:24px; flex-shrink:0; }
+.config-banner h3 { font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:var(--navy); margin-bottom:4px; }
+.config-banner p { font-size:12px; color:var(--gray); line-height:1.6; }
+.config-banner code { background:#FFE0B2; padding:1px 6px; border-radius:4px; font-size:11px; color:#E65100; }
+
+/* Saving indicator */
+.saving { display:none; align-items:center; gap:8px; font-size:13px; color:var(--teal); font-weight:500; }
+.saving.show { display:flex; }
+.saving-dot { width:8px; height:8px; border-radius:50%; background:var(--teal); animation:pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+@media(max-width:900px){
+  .kpi-strip{grid-template-columns:1fr 1fr;}
+  .exec-grid3{grid-template-columns:1fr;}
+  .form-grid{grid-template-columns:1fr;}
+  .page{padding:20px 16px;}
+  .nav{padding:0 16px;}
+  .nav-brand .sub{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="title">AeC <span>Qualidade</span> 2026</div>
+    <div class="sub">Gerência Cida Santos</div>
+  </div>
+  <div class="nav-tabs">
+    <button class="tab-btn active" id="tab-report" onclick="goTo('report',this)">📝 Reportar</button>
+    <button class="tab-btn" id="tab-dashboard" onclick="goTo('dashboard',this)">📊 Dashboard</button>
+    <button class="tab-btn locked" id="tab-detail" onclick="askPw('detail')">🔍 Detalhamento</button>
+    <button class="tab-btn locked" id="tab-exec" onclick="askPw('exec')">🎯 Executivo</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════
+     PAGE: REPORT
+══════════════════════════════════ -->
+<div class="page active" id="page-report">
+
+  <!-- Config banner (shown until webhook is set) -->
+  <div class="config-banner" id="config-banner">
+    <div class="icon">⚙️</div>
+    <div>
+      <h3>Configuração pendente — Google Sheets</h3>
+      <p>Para ativar o envio de dados para a planilha, cole a URL do seu Google Apps Script no campo abaixo e clique em Salvar. Após configurar, este aviso desaparece.<br>
+      URL do script: <code>https://script.google.com/macros/s/SEU_ID_AQUI/exec</code></p>
+      <div style="display:flex;gap:10px;margin-top:10px;align-items:center;">
+        <input type="text" id="webhook-url" placeholder="Cole a URL do Apps Script aqui..." style="flex:1;font-size:12px;padding:8px 12px;">
+        <button class="btn btn-primary btn-sm" onclick="saveWebhook()">Salvar URL</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="pg-header">
+    <div>
+      <h1>Report Mensal</h1>
+      <p>Preencha o acompanhamento das iniciativas e OKRs do seu time neste mês.</p>
+    </div>
+    <div class="saving" id="saving-indicator">
+      <div class="saving-dot"></div> Salvando...
+    </div>
+  </div>
+
+  <!-- IDENTIFICAÇÃO -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title"><span class="accent" style="background:var(--cyan)"></span>Identificação</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Responsável</label>
+        <select id="f-resp">
+          <option value="">Selecionar...</option>
+          <option>Sandra — Itaú</option>
+          <option>Paulo — BV / 99</option>
+          <option>Victor — Monitoria</option>
+          <option>Ricardo — Mercado Livre</option>
+          <option>Gabriel — Produção</option>
+          <option>Karina — Claro Brasil</option>
+          <option>Antonio — Neoenergia</option>
+          <option>Aparecida — Automação</option>
+          <option>Outro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Mês de referência</label>
+        <select id="f-mes">
+          <option value="">Selecionar...</option>
+          <option>Janeiro 2026</option><option>Fevereiro 2026</option>
+          <option>Março 2026</option><option>Abril 2026</option>
+          <option>Maio 2026</option><option>Junho 2026</option>
+          <option>Julho 2026</option><option>Agosto 2026</option>
+          <option>Setembro 2026</option><option>Outubro 2026</option>
+          <option>Novembro 2026</option><option>Dezembro 2026</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Produto / Cliente</label>
+        <input type="text" id="f-produto" placeholder="Ex: Itaú, BV, 99...">
+      </div>
+      <div class="form-group">
+        <label>Status geral do período</label>
+        <select id="f-status">
+          <option value="">Selecionar...</option>
+          <option value="green">🟢 Em dia</option>
+          <option value="yellow">🟡 Atenção</option>
+          <option value="red">🔴 Atrasado</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENTREGÁVEIS -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title"><span class="accent" style="background:var(--lime)"></span>Entregáveis deste mês</div>
+    <div class="pills" id="pills-container">
+      <div class="pill" onclick="tp(this)">✅ Processo documentado</div>
+      <div class="pill" onclick="tp(this)">📈 Melhoria entregue</div>
+      <div class="pill" onclick="tp(this)">🔁 Prática escalável</div>
+      <div class="pill" onclick="tp(this)">⚡ Alerta preventivo</div>
+      <div class="pill" onclick="tp(this)">🤖 Automação</div>
+      <div class="pill" onclick="tp(this)">📋 Plano de ação</div>
+      <div class="pill" onclick="tp(this)">👥 Feedback formal</div>
+      <div class="pill" onclick="tp(this)">🏆 Case documentado</div>
+    </div>
+  </div>
+
+  <!-- OKR 1 -->
+  <div class="card" style="margin-bottom:20px; border-left:4px solid var(--teal);">
+    <div class="card-title"><span class="accent" style="background:var(--teal)"></span>OKR 1 — Antecipar Riscos Operacionais e Financeiros</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>KR1 — Alertas preventivos com ≥10 dias de antecedência</label>
+        <select id="o1k1"><option value="">Status...</option><option value="100">✅ Meta atingida</option><option value="70">🟡 Em progresso</option><option value="50">⚠️ Em risco</option><option value="0">❌ Não iniciado</option></select>
+      </div>
+      <div class="form-group">
+        <label>KR2 — Reduzir reincidência de erros críticos em 40%</label>
+        <select id="o1k2"><option value="">Status...</option><option value="100">✅ Meta atingida</option><option value="70">🟡 Em progresso</option><option value="50">⚠️ Em risco</option><option value="0">❌ Não iniciado</option></select>
+      </div>
+      <div class="form-group">
+        <label>KR3 — Reduzir impacto de indisponibilidade em 30%</label>
+        <select id="o1k3"><option value="">Status...</option><option value="100">✅ Meta atingida</option><option value="70">🟡 Em progresso</option><option value="50">⚠️ Em risco</option><option value="0">❌ Não iniciado</option></select>
+      </div>
+      <div class="form-group">
+        <label>KR4 — 90% dos alertas acompanhados até estabilização</label>
+        <select id="o1k4"><option value="">Status...</option><option value="100">✅ Meta atingida</option><option value="70">🟡 Em progresso</option><option value="50">⚠️ Em risco</option><option value="0">❌ Não iniciado</option></select>
+      </div>
+      <div class="divider" style="margin:4px 0; grid-column:1/-1;"></div>
+      <div class="form-group">
+        <label>📊 KPI impactado</label>
+        <input type="text" id="o1-kpi" placeholder="Ex: TMA, CSAT, Reincidência...">
+      </div>
+      <div class="form-group">
+        <label>📉 Valor antes → depois (ou % de impacto)</label>
+        <input type="text" id="o1-impacto" placeholder="Ex: 12% → 7% · ou · Redução de 42%">
+      </div>
+      <div class="form-group">
+        <label>% progresso geral deste OKR neste mês</label>
+        <input type="range" id="o1-pct" min="0" max="100" value="0" oninput="setPct('o1-pct','o1-pctv','var(--teal)')">
+        <div style="display:flex;justify-content:space-between;margin-top:4px;">
+          <span style="font-size:11px;color:var(--gray);">0%</span>
+          <span id="o1-pctv" style="font-size:14px;font-weight:700;color:var(--teal);">0%</span>
+          <span style="font-size:11px;color:var(--gray);">100%</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Ganho mensurável registrado</label>
+        <input type="text" id="o1-ganho" placeholder="Ex: Evitamos 2 multas · 3 alertas gerados antes do impacto">
+      </div>
+      <div class="form-group full">
+        <label>Comentário livre — o que foi feito, o que está pendente</label>
+        <textarea id="o1-comment" placeholder="Detalhe as ações realizadas, obstáculos encontrados, próximos passos..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- OKR 2 -->
+  <div class="card" style="margin-bottom:20px; border-left:4px solid var(--magenta);">
+    <div class="card-title"><span class="accent" style="background:var(--magenta)"></span>OKR 2 — Diferenciar a Entrega com Eficiência</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>KR1 — Automatizar ≥30% das atividades manuais</label>
+        <select id="o2k1"><option value="">Status...</option><option value="100">✅ Meta atingida</option><option value="70">🟡 Em progresso</option><option value="50">⚠️ Em risco</option><option value="0">❌ Não iniciado</option></select>
+      </div>
+      <div class="form-group">
+        <label>KR2 — 80% de adoção ativa da monitoria (uso real semanal)</label>
+        <select id="o2k2"><option value="">Status...</option><option value="100">✅ Meta atingida</option><option value="70">🟡 Em progresso</option><option value="50">⚠️ Em risco</option><option value="0">❌ Não iniciado</option></select>
+      </div>
+      <div class="form-group">
+        <label>KR3 — Replicar ≥3 práticas de sucesso entre produtos</label>
+        <select id="o2k3"><option value="">Status...</option><option value="100">✅ Meta atingida</option><option value="70">🟡 Em progresso</option><option value="50">⚠️ Em risco</option><option value="0">❌ Não iniciado</option></select>
+      </div>
+      <div class="form-group">
+        <label>KR4 — Reduzir tempo médio de diagnóstico em 50%</label>
+        <select id="o2k4"><option value="">Status...</option><option value="100">✅ Meta atingida</option><option value="70">🟡 Em progresso</option><option value="50">⚠️ Em risco</option><option value="0">❌ Não iniciado</option></select>
+      </div>
+      <div class="divider" style="margin:4px 0; grid-column:1/-1;"></div>
+      <div class="form-group">
+        <label>📊 KPI impactado</label>
+        <input type="text" id="o2-kpi" placeholder="Ex: Tempo de diagnóstico, % automação...">
+      </div>
+      <div class="form-group">
+        <label>📉 Valor antes → depois (ou % de impacto)</label>
+        <input type="text" id="o2-impacto" placeholder="Ex: 48h → 22h · ou · 25% automatizado">
+      </div>
+      <div class="form-group">
+        <label>% progresso geral deste OKR neste mês</label>
+        <input type="range" id="o2-pct" min="0" max="100" value="0" oninput="setPct('o2-pct','o2-pctv','var(--magenta)')">
+        <div style="display:flex;justify-content:space-between;margin-top:4px;">
+          <span style="font-size:11px;color:var(--gray);">0%</span>
+          <span id="o2-pctv" style="font-size:14px;font-weight:700;color:var(--magenta);">0%</span>
+          <span style="font-size:11px;color:var(--gray);">100%</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Ganho mensurável registrado</label>
+        <input type="text" id="o2-ganho" placeholder="Ex: Redução de 30% no tempo de relatório">
+      </div>
+      <div class="form-group full">
+        <label>Comentário livre — inovações, automações, práticas escaladas</label>
+        <textarea id="o2-comment"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- OKR 3 -->
+  <div class="card" style="margin-bottom:20px; border-left:4px solid var(--lime);">
+    <div class="card-title"><span class="accent" style="background:var(--lime)"></span>OKR 3 — Sustentar Excelência com Pessoas e Processos</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>KR1 — 100% dos colaboradores com feedback formal documentado</label>
+        <select id="o3k1"><option value="">Status...</option><option value="100">✅ Meta atingida</option><option value="70">🟡 Em progresso</option><option value="50">⚠️ Em risco</option><option value="0">❌ Não iniciado</option></select>
+      </div>
+      <div class="form-group">
+        <label>KR4 — 100% dos planos de ação acompanhados por ≥15 dias</label>
+        <select id="o3k4"><option value="">Status...</option><option value="100">✅ Meta atingida</option><option value="70">🟡 Em progresso</option><option value="50">⚠️ Em risco</option><option value="0">❌ Não iniciado</option></select>
+      </div>
+      <div class="divider" style="margin:4px 0; grid-column:1/-1;"></div>
+      <div class="form-group">
+        <label>📊 KPI impactado</label>
+        <input type="text" id="o3-kpi" placeholder="Ex: Turnover, % feedbacks realizados...">
+      </div>
+      <div class="form-group">
+        <label>📉 Valor antes → depois (ou % de impacto)</label>
+        <input type="text" id="o3-impacto" placeholder="Ex: 100% feedbacks concluídos · Turnover -15%">
+      </div>
+      <div class="form-group">
+        <label>% progresso geral deste OKR neste mês</label>
+        <input type="range" id="o3-pct" min="0" max="100" value="0" oninput="setPct('o3-pct','o3-pctv','var(--lime)')">
+        <div style="display:flex;justify-content:space-between;margin-top:4px;">
+          <span style="font-size:11px;color:var(--gray);">0%</span>
+          <span id="o3-pctv" style="font-size:14px;font-weight:700;color:var(--lime);">0%</span>
+          <span style="font-size:11px;color:var(--gray);">100%</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Ganho mensurável registrado</label>
+        <input type="text" id="o3-ganho" placeholder="Ex: Zero desligamentos surpresa · Todos PDIs atualizados">
+      </div>
+      <div class="form-group full">
+        <label>Comentário livre — pessoas, planos de ação, retenção</label>
+        <textarea id="o3-comment"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROCESSO / MELHORIA / PRÁTICA -->
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:20px;">
+    <div class="card">
+      <div class="card-title"><span class="accent" style="background:var(--teal)"></span>Processo</div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label>Nome do processo</label>
+        <input type="text" id="p-nome" placeholder="Ex: Diagnóstico de queda de qualidade">
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label>Status</label>
+        <select id="p-status">
+          <option value="">Selecionar...</option>
+          <option>🚧 Em construção</option>
+          <option>✅ Implementado</option>
+          <option>📋 Documentado e revisado</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Resultado / impacto</label>
+        <textarea id="p-resultado" placeholder="O que melhorou?" style="min-height:60px;"></textarea>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="accent" style="background:var(--yellow)"></span>Melhoria</div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label>Situação antes</label>
+        <input type="text" id="m-antes" placeholder="Ex: Diagnóstico em 48h">
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label>Resultado depois</label>
+        <input type="text" id="m-depois" placeholder="Ex: Diagnóstico em 24h">
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label>% de impacto estimado</label>
+        <input type="text" id="m-pct" placeholder="Ex: 50% mais rápido">
+      </div>
+      <div class="form-group">
+        <label>Tipo de ganho</label>
+        <select id="m-tipo">
+          <option value="">Selecionar...</option>
+          <option>⏱️ Tempo</option>
+          <option>💰 Custo</option>
+          <option>📉 Redução de erro</option>
+          <option>📈 KPI</option>
+          <option>⚡ Esforço</option>
+        </select>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="accent" style="background:var(--magenta)"></span>Prática Escalável</div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label>Nome da prática</label>
+        <input type="text" id="e-nome" placeholder="Ex: Template de diagnóstico">
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label>Onde foi aplicada</label>
+        <input type="text" id="e-origem" placeholder="Ex: BV">
+      </div>
+      <div class="form-group" style="margin-bottom:12px;">
+        <label>Onde pode replicar</label>
+        <input type="text" id="e-replica" placeholder="Ex: 99, Carrefour">
+      </div>
+      <div class="form-group">
+        <label>Pronta para escalar?</label>
+        <select id="e-pronta">
+          <option value="">Selecionar...</option>
+          <option>✅ Pronta — pode replicar agora</option>
+          <option>🟡 Precisa de ajuste</option>
+          <option>❌ Ainda em validação</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALERTAS -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title"><span class="accent" style="background:var(--magenta)"></span>⚠️ Alertas e Pontos de Atenção</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Principal risco identificado</label>
+        <input type="text" id="r-risco" placeholder="Ex: TMA com tendência de alta">
+      </div>
+      <div class="form-group">
+        <label>Nível de risco</label>
+        <select id="r-nivel">
+          <option value="">Selecionar...</option>
+          <option value="low">🟢 Baixo</option>
+          <option value="mid">🟡 Médio</option>
+          <option value="high">🔴 Alto</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>O que precisa de decisão ou suporte da liderança?</label>
+        <textarea id="r-suporte" placeholder="Escreva aqui qualquer ponto que precisa de apoio..."></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSIGHT DO MÊS -->
+  <div class="card" style="margin-bottom:28px; border:2px solid var(--yellow);">
+    <div class="card-title"><span class="accent" style="background:var(--yellow)"></span>⭐ Insight Estratégico do Mês</div>
+    <p style="font-size:12px;color:var(--gray);margin-bottom:14px;">Descreva em 1-2 frases o maior destaque deste mês — o resultado ou avanço que mais merece visibilidade.</p>
+    <div class="form-group">
+      <label>Destaque do mês</label>
+      <textarea id="f-insight" placeholder="Ex: Pela primeira vez antecipamos queda de CSAT com 12 dias de antecedência, evitando impacto no contrato com o cliente X..." style="min-height:80px;"></textarea>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:12px;justify-content:flex-end;">
+    <button class="btn btn-ghost" onclick="clearForm()">Limpar formulário</button>
+    <button class="btn btn-primary" onclick="submitReport()">💾 Salvar Report</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE: DASHBOARD
+══════════════════════════════════ -->
+<div class="page" id="page-dashboard">
+  <div class="pg-header">
+    <div>
+      <h1>Dashboard Evolutivo</h1>
+      <p>Acompanhamento consolidado dos OKRs — atualizado automaticamente a cada novo report.</p>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="loadDashboard()">🔄 Atualizar</button>
+  </div>
+
+  <div class="kpi-strip">
+    <div class="kpi-card k1"><div class="kpi-lbl">Reports salvos</div><div class="kpi-val" id="d-total">—</div><div class="kpi-sub">no ano</div></div>
+    <div class="kpi-card k2"><div class="kpi-lbl">OKR 1 · Antecipar</div><div class="kpi-val" id="d-o1">—</div><div class="kpi-sub">média acumulada</div></div>
+    <div class="kpi-card k3"><div class="kpi-lbl">OKR 2 · Diferenciar</div><div class="kpi-val" id="d-o2">—</div><div class="kpi-sub">média acumulada</div></div>
+    <div class="kpi-card k4"><div class="kpi-lbl">OKR 3 · Excelência</div><div class="kpi-val" id="d-o3">—</div><div class="kpi-sub">média acumulada</div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title"><span class="accent" style="background:var(--navy)"></span>Progresso por OKR</div>
+    <div id="d-bars"><p style="color:var(--gray);font-size:14px;">Nenhum dado ainda.</p></div>
+  </div>
+
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-title"><span class="accent" style="background:var(--navy)"></span>Histórico de Reports</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Mês</th><th>Responsável</th><th>Produto</th><th>Status</th>
+            <th>OKR 1</th><th>OKR 2</th><th>OKR 3</th>
+            <th>Ganho OKR1</th><th>Ganho OKR2</th><th>Risco</th>
+          </tr>
+        </thead>
+        <tbody id="d-tbody"><tr><td colspan="10" style="text-align:center;padding:30px;color:var(--gray);">Nenhum dado</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="accent" style="background:var(--magenta)"></span>⚠️ Alertas Abertos</div>
+    <div id="d-alertas"><p style="color:var(--gray);font-size:14px;">Nenhum alerta.</p></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE: DETALHAMENTO (senha)
+══════════════════════════════════ -->
+<div class="page" id="page-detail">
+  <div class="pg-header">
+    <div>
+      <h1>Detalhamento dos Reports</h1>
+      <p>Clique em qualquer report para expandir e ver todos os dados preenchidos.</p>
+    </div>
+    <button class="btn btn-ghost btn-sm" onclick="loadDetail()">🔄 Atualizar</button>
+  </div>
+  <div id="detail-list"><p style="color:var(--gray);font-size:14px;">Nenhum dado.</p></div>
+</div>
+
+<!-- ══════════════════════════════════
+     PAGE: EXECUTIVO (senha)
+══════════════════════════════════ -->
+<div class="page" id="page-exec">
+  <div class="exec-hero">
+    <div class="exec-tag">Confidencial · Visão Executiva · Gerência Cida Santos</div>
+    <h1>Qualidade AeC — 2026</h1>
+    <p class="subtitle">Síntese estratégica para apresentação ao Diretor Wallace · Antecipar e Diferenciar</p>
+  </div>
+
+  <!-- Destaque do ano -->
+  <div class="best-year" id="ex-bestyear">
+    <div class="by-label">⭐ Maior destaque do ano</div>
+    <div class="by-text" id="ex-best-text">Nenhum dado disponível ainda.</div>
+    <div class="by-sub" id="ex-best-sub"></div>
+  </div>
+
+  <!-- Insight do mês em destaque -->
+  <div class="insight-highlight" id="ex-insight-box">
+    <div class="ih-label">💡 Insight estratégico em destaque</div>
+    <div class="ih-text" id="ex-insight-text">Nenhum insight registrado.</div>
+    <div class="ih-month" id="ex-insight-month"></div>
+  </div>
+
+  <!-- OKR rings -->
+  <div class="exec-grid3" style="margin-bottom:24px;">
+    <div class="exec-okr-block">
+      <div class="side-bar" style="background:var(--teal);"></div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--gray);margin-bottom:4px;">OKR 1</div>
+      <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--navy);margin-bottom:16px;">Antecipar Riscos</div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div class="score-ring" id="ex-ring1">—</div>
+        <div style="flex:1;">
+          <div style="font-size:11px;color:var(--gray);margin-bottom:6px;">Progresso acumulado</div>
+          <div class="prog-bar"><div class="prog-fill" id="ex-bar1" style="width:0%;background:linear-gradient(90deg,var(--teal),var(--cyan));"></div></div>
+          <div style="font-size:11px;color:var(--gray);margin-top:6px;" id="ex-ganho1">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="exec-okr-block">
+      <div class="side-bar" style="background:var(--magenta);"></div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--gray);margin-bottom:4px;">OKR 2</div>
+      <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--navy);margin-bottom:16px;">Diferenciar a Entrega</div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div class="score-ring" id="ex-ring2">—</div>
+        <div style="flex:1;">
+          <div style="font-size:11px;color:var(--gray);margin-bottom:6px;">Progresso acumulado</div>
+          <div class="prog-bar"><div class="prog-fill" id="ex-bar2" style="width:0%;background:linear-gradient(90deg,var(--magenta),#f0609a);"></div></div>
+          <div style="font-size:11px;color:var(--gray);margin-top:6px;" id="ex-ganho2">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="exec-okr-block">
+      <div class="side-bar" style="background:var(--lime);"></div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--gray);margin-bottom:4px;">OKR 3</div>
+      <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--navy);margin-bottom:16px;">Sustentar Excelência</div>
+      <div style="display:flex;align-items:center;gap:16px;">
+        <div class="score-ring" id="ex-ring3">—</div>
+        <div style="flex:1;">
+          <div style="font-size:11px;color:var(--gray);margin-bottom:6px;">Progresso acumulado</div>
+          <div class="prog-bar"><div class="prog-fill" id="ex-bar3" style="width:0%;background:linear-gradient(90deg,var(--lime),#5fb800);"></div></div>
+          <div style="font-size:11px;color:var(--gray);margin-top:6px;" id="ex-ganho3">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contadores -->
+  <div class="card" style="margin-bottom:24px;">
+    <div class="card-title"><span class="accent" style="background:var(--navy)"></span>Entregas Consolidadas no Ano</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+      <div style="text-align:center;padding:18px;background:var(--offwhite);border-radius:12px;">
+        <div style="font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--teal);" id="ex-cnt-proc">0</div>
+        <div style="font-size:11px;color:var(--gray);margin-top:2px;">Processos</div>
+      </div>
+      <div style="text-align:center;padding:18px;background:var(--offwhite);border-radius:12px;">
+        <div style="font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--yellow);" id="ex-cnt-melh">0</div>
+        <div style="font-size:11px;color:var(--gray);margin-top:2px;">Melhorias</div>
+      </div>
+      <div style="text-align:center;padding:18px;background:var(--offwhite);border-radius:12px;">
+        <div style="font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--magenta);" id="ex-cnt-prat">0</div>
+        <div style="font-size:11px;color:var(--gray);margin-top:2px;">Práticas Escaladas</div>
+      </div>
+      <div style="text-align:center;padding:18px;background:var(--offwhite);border-radius:12px;">
+        <div style="font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--lime);" id="ex-cnt-alert">0</div>
+        <div style="font-size:11px;color:var(--gray);margin-top:2px;">Alertas Gerados</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="card" style="margin-bottom:24px;">
+    <div class="card-title"><span class="accent" style="background:var(--navy)"></span>Linha do Tempo — Evolução Mensal</div>
+    <div class="timeline" id="ex-timeline"><p style="color:var(--gray);font-size:14px;">Nenhum dado.</p></div>
+  </div>
+
+  <!-- Síntese automática -->
+  <div class="card" style="border:2px solid var(--border);margin-bottom:24px;">
+    <div class="card-title"><span class="accent" style="background:var(--navy)"></span>Síntese Estratégica Automática</div>
+    <p id="ex-sintese" style="font-size:14px;line-height:1.8;color:var(--dark);">Nenhum dado disponível.</p>
+  </div>
+
+  <div style="display:flex;gap:12px;justify-content:flex-end;">
+    <button class="btn btn-ghost" onclick="window.print()">🖨️ Imprimir / Salvar PDF</button>
+  </div>
+</div>
+
+<!-- PASSWORD OVERLAY -->
+<div class="pw-overlay" id="pw-overlay" style="display:none;">
+  <div class="pw-box">
+    <div class="lock-icon">🔒</div>
+    <h2>Acesso Restrito</h2>
+    <p>Esta área é exclusiva para a liderança.<br>Digite a senha para continuar.</p>
+    <input type="password" id="pw-input" placeholder="••••••" onkeydown="if(event.key==='Enter')checkPw()">
+    <button class="btn btn-magenta" style="width:100%;" onclick="checkPw()">Acessar</button>
+    <div class="pw-err" id="pw-err">Senha incorreta.</div>
+    <button class="btn btn-ghost btn-sm" style="margin-top:12px;width:100%;" onclick="closePw()">Cancelar</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ────────────────────────────────────
+const PASSWORD = 'Wallace2026'; // ← ALTERE AQUI se quiser
+const LS_KEY   = 'aec_qlt_2026_data';
+const LS_WH    = 'aec_qlt_webhook';
+let   pendingPage = '';
+
+// ── INIT ──────────────────────────────────────
+window.onload = () => {
+  const wh = localStorage.getItem(LS_WH);
+  if (wh) {
+    document.getElementById('webhook-url').value = wh;
+    document.getElementById('config-banner').style.display = 'none';
+  }
+};
+
+// ── WEBHOOK ───────────────────────────────────
+function saveWebhook() {
+  const v = document.getElementById('webhook-url').value.trim();
+  if (!v.startsWith('https://')) { showToast('URL inválida. Deve começar com https://', 'error'); return; }
+  localStorage.setItem(LS_WH, v);
+  document.getElementById('config-banner').style.display = 'none';
+  showToast('URL salva! O sistema vai enviar dados para sua planilha.', 'success');
+}
+
+// ── NAV ───────────────────────────────────────
+function goTo(name, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (name === 'dashboard') loadDashboard();
+  if (name === 'detail')    loadDetail();
+  if (name === 'exec')      loadExec();
+}
+
+function askPw(target) {
+  pendingPage = target;
+  document.getElementById('pw-overlay').style.display = 'flex';
+  document.getElementById('pw-input').value = '';
+  document.getElementById('pw-err').style.display = 'none';
+  setTimeout(() => document.getElementById('pw-input').focus(), 100);
+}
+
+function checkPw() {
+  if (document.getElementById('pw-input').value === PASSWORD) {
+    document.getElementById('pw-overlay').style.display = 'none';
+    const btn = document.getElementById('tab-' + pendingPage);
+    goTo(pendingPage, btn);
+  } else {
+    document.getElementById('pw-err').style.display = 'block';
+    document.getElementById('pw-input').value = '';
+  }
+}
+
+function closePw() {
+  document.getElementById('pw-overlay').style.display = 'none';
+}
+
+// ── HELPERS ───────────────────────────────────
+function tp(el) { el.classList.toggle('on'); }
+function setPct(sid, vid, col) {
+  const v = document.getElementById(sid).value;
+  const el = document.getElementById(vid);
+  el.textContent = v + '%';
+  el.style.color = col.replace('var(','').replace(')','');
+}
+
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+function getData() {
+  try { return JSON.parse(localStorage.getItem(LS_KEY)) || []; }
+  catch { return []; }
+}
+function saveLocal(d) { localStorage.setItem(LS_KEY, JSON.stringify(d)); }
+
+function statusBadge(s) {
+  const m = {green:'badge-green',yellow:'badge-yellow',red:'badge-red'};
+  const l = {green:'🟢 Em dia',yellow:'🟡 Atenção',red:'🔴 Atrasado'};
+  return s ? `<span class="badge ${m[s]||'badge-gray'}">${l[s]||s}</span>` : '—';
+}
+function riscoBadge(r) {
+  const m = {low:'badge-green',mid:'badge-yellow',high:'badge-red'};
+  const l = {low:'🟢 Baixo',mid:'🟡 Médio',high:'🔴 Alto'};
+  return r ? `<span class="badge ${m[r]||'badge-gray'}">${l[r]||r}</span>` : '—';
+}
+function pctBadge(v) {
+  const cls = v>=70?'badge-green':v>=40?'badge-yellow':'badge-red';
+  return `<span class="badge ${cls}">${v}%</span>`;
+}
+function ringClass(v) { return v>=70?'ring-green':v>=40?'ring-yellow':'ring-red'; }
+
+// ── COLLECT FORM ──────────────────────────────
+function collectForm() {
+  const pills = [];
+  document.querySelectorAll('#pills-container .pill.on').forEach(p => pills.push(p.textContent.trim()));
+
+  return {
+    id: Date.now(),
+    ts: new Date().toISOString(),
+    responsavel: document.getElementById('f-resp').value,
+    mes:         document.getElementById('f-mes').value,
+    produto:     document.getElementById('f-produto').value,
+    status:      document.getElementById('f-status').value,
+    pills,
+    okr1: {
+      kr1: document.getElementById('o1k1').value,
+      kr2: document.getElementById('o1k2').value,
+      kr3: document.getElementById('o1k3').value,
+      kr4: document.getElementById('o1k4').value,
+      kpi: document.getElementById('o1-kpi').value,
+      impacto: document.getElementById('o1-impacto').value,
+      ganho: document.getElementById('o1-ganho').value,
+      pct: +document.getElementById('o1-pct').value,
+      comment: document.getElementById('o1-comment').value,
+    },
+    okr2: {
+      kr1: document.getElementById('o2k1').value,
+      kr2: document.getElementById('o2k2').value,
+      kr3: document.getElementById('o2k3').value,
+      kr4: document.getElementById('o2k4').value,
+      kpi: document.getElementById('o2-kpi').value,
+      impacto: document.getElementById('o2-impacto').value,
+      ganho: document.getElementById('o2-ganho').value,
+      pct: +document.getElementById('o2-pct').value,
+      comment: document.getElementById('o2-comment').value,
+    },
+    okr3: {
+      kr1: document.getElementById('o3k1').value,
+      kr4: document.getElementById('o3k4').value,
+      kpi: document.getElementById('o3-kpi').value,
+      impacto: document.getElementById('o3-impacto').value,
+      ganho: document.getElementById('o3-ganho').value,
+      pct: +document.getElementById('o3-pct').value,
+      comment: document.getElementById('o3-comment').value,
+    },
+    processo: {
+      nome:      document.getElementById('p-nome').value,
+      status:    document.getElementById('p-status').value,
+      resultado: document.getElementById('p-resultado').value,
+    },
+    melhoria: {
+      antes:  document.getElementById('m-antes').value,
+      depois: document.getElementById('m-depois').value,
+      pct:    document.getElementById('m-pct').value,
+      tipo:   document.getElementById('m-tipo').value,
+    },
+    escalavel: {
+      nome:    document.getElementById('e-nome').value,
+      origem:  document.getElementById('e-origem').value,
+      replica: document.getElementById('e-replica').value,
+      pronta:  document.getElementById('e-pronta').value,
+    },
+    riscos: {
+      principal: document.getElementById('r-risco').value,
+      nivel:     document.getElementById('r-nivel').value,
+      suporte:   document.getElementById('r-suporte').value,
+    },
+    insight: document.getElementById('f-insight').value,
+  };
+}
+
+// ── SUBMIT ────────────────────────────────────
+async function submitReport() {
+  const entry = collectForm();
+  if (!entry.responsavel || !entry.mes) {
+    showToast('Selecione o responsável e o mês antes de salvar.', 'error');
+    return;
+  }
+
+  // Save locally
+  const data = getData();
+  data.push(entry);
+  saveLocal(data);
+
+  // Send to Google Sheets
+  const wh = localStorage.getItem(LS_WH);
+  if (wh) {
+    const ind = document.getElementById('saving-indicator');
+    ind.classList.add('show');
+    try {
+      await fetch(wh, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(flattenEntry(entry)),
+      });
+      showToast('✅ Report salvo e enviado para o Google Sheets!', 'success');
+    } catch(e) {
+      showToast('⚠️ Salvo localmente. Erro ao enviar para planilha.', 'error');
+    }
+    ind.classList.remove('show');
+  } else {
+    showToast('✅ Report salvo localmente! Configure o Google Sheets para sincronizar.', 'success');
+  }
+  clearForm();
+}
+
+function flattenEntry(e) {
+  return {
+    id: e.id, ts: e.ts,
+    responsavel: e.responsavel, mes: e.mes, produto: e.produto, status: e.status,
+    entregaveis: e.pills.join(', '),
+    okr1_kr1: e.okr1.kr1, okr1_kr2: e.okr1.kr2, okr1_kr3: e.okr1.kr3, okr1_kr4: e.okr1.kr4,
+    okr1_kpi: e.okr1.kpi, okr1_impacto: e.okr1.impacto, okr1_ganho: e.okr1.ganho,
+    okr1_pct: e.okr1.pct, okr1_comment: e.okr1.comment,
+    okr2_kr1: e.okr2.kr1, okr2_kr2: e.okr2.kr2, okr2_kr3: e.okr2.kr3, okr2_kr4: e.okr2.kr4,
+    okr2_kpi: e.okr2.kpi, okr2_impacto: e.okr2.impacto, okr2_ganho: e.okr2.ganho,
+    okr2_pct: e.okr2.pct, okr2_comment: e.okr2.comment,
+    okr3_kr1: e.okr3.kr1, okr3_kr4: e.okr3.kr4,
+    okr3_kpi: e.okr3.kpi, okr3_impacto: e.okr3.impacto, okr3_ganho: e.okr3.ganho,
+    okr3_pct: e.okr3.pct, okr3_comment: e.okr3.comment,
+    proc_nome: e.processo.nome, proc_status: e.processo.status, proc_resultado: e.processo.resultado,
+    melh_antes: e.melhoria.antes, melh_depois: e.melhoria.depois, melh_pct: e.melhoria.pct, melh_tipo: e.melhoria.tipo,
+    esc_nome: e.escalavel.nome, esc_origem: e.escalavel.origem, esc_replica: e.escalavel.replica, esc_pronta: e.escalavel.pronta,
+    risco_principal: e.riscos.principal, risco_nivel: e.riscos.nivel, risco_suporte: e.riscos.suporte,
+    insight: e.insight,
+  };
+}
+
+function clearForm() {
+  document.querySelectorAll('#page-report input[type=text], #page-report select, #page-report textarea').forEach(el => el.value = '');
+  document.querySelectorAll('#page-report input[type=range]').forEach(el => { el.value = 0; });
+  ['o1-pctv','o2-pctv','o3-pctv'].forEach(id => { document.getElementById(id).textContent = '0%'; });
+  document.querySelectorAll('.pill.on').forEach(p => p.classList.remove('on'));
+}
+
+// ── DASHBOARD ─────────────────────────────────
+function loadDashboard() {
+  const data = getData();
+  document.getElementById('d-total').textContent = data.length || '0';
+  if (!data.length) return;
+
+  const avg = (key) => Math.round(data.reduce((s,e) => s + e[key].pct, 0) / data.length);
+  const a1 = avg('okr1'), a2 = avg('okr2'), a3 = avg('okr3');
+  document.getElementById('d-o1').textContent = a1 + '%';
+  document.getElementById('d-o2').textContent = a2 + '%';
+  document.getElementById('d-o3').textContent = a3 + '%';
+
+  const bar = (lbl, v, col) => `
+    <div style="margin-bottom:18px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+        <span style="font-size:13px;font-weight:600;color:var(--navy);">${lbl}</span>
+        <span style="font-size:13px;font-weight:700;color:${col};">${v}%</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${v}%;background:${col};"></div></div>
+    </div>`;
+  document.getElementById('d-bars').innerHTML =
+    bar('OKR 1 — Antecipar Riscos', a1, 'var(--teal)') +
+    bar('OKR 2 — Diferenciar a Entrega', a2, 'var(--magenta)') +
+    bar('OKR 3 — Sustentar Excelência', a3, 'var(--lime)');
+
+  document.getElementById('d-tbody').innerHTML = [...data].reverse().map(e => `
+    <tr>
+      <td><strong>${e.mes}</strong></td>
+      <td>${e.responsavel}</td>
+      <td>${e.produto||'—'}</td>
+      <td>${statusBadge(e.status)}</td>
+      <td>${pctBadge(e.okr1.pct)}</td>
+      <td>${pctBadge(e.okr2.pct)}</td>
+      <td>${pctBadge(e.okr3.pct)}</td>
+      <td style="font-size:12px;color:var(--gray);">${e.okr1.ganho||'—'}</td>
+      <td style="font-size:12px;color:var(--gray);">${e.okr2.ganho||'—'}</td>
+      <td>${riscoBadge(e.riscos.nivel)}</td>
+    </tr>
+  `).join('');
+
+  const alertas = data.filter(e => e.riscos.principal);
+  document.getElementById('d-alertas').innerHTML = alertas.length
+    ? alertas.slice(-5).reverse().map(e => `
+        <div style="padding:14px;border-radius:10px;background:var(--offwhite);margin-bottom:10px;
+          border-left:4px solid ${e.riscos.nivel==='high'?'var(--magenta)':e.riscos.nivel==='mid'?'var(--yellow)':'var(--lime)'};">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+            <strong style="font-size:13px;">${e.mes} · ${e.responsavel}</strong>
+            ${riscoBadge(e.riscos.nivel)}
+          </div>
+          <p style="font-size:13px;color:var(--dark);">⚠️ ${e.riscos.principal}</p>
+          ${e.riscos.suporte ? `<p style="font-size:12px;color:var(--gray);margin-top:3px;">💬 ${e.riscos.suporte}</p>` : ''}
+        </div>`)
+      .join('')
+    : '<p style="color:var(--gray);font-size:14px;">Nenhum alerta registrado.</p>';
+}
+
+// ── DETALHAMENTO ──────────────────────────────
+function loadDetail() {
+  const data = getData();
+  const el = document.getElementById('detail-list');
+  if (!data.length) { el.innerHTML = '<p style="color:var(--gray);font-size:14px;">Nenhum dado.</p>'; return; }
+
+  el.innerHTML = [...data].reverse().map(e => `
+    <div class="detail-card" onclick="toggleDetail(this)">
+      <div class="dc-header">
+        <div>
+          <div class="dc-title">${e.mes} · ${e.responsavel} ${e.produto ? '· ' + e.produto : ''}</div>
+          <div style="display:flex;gap:8px;margin-top:6px;">
+            ${statusBadge(e.status)}
+            ${pctBadge(e.okr1.pct)} ${pctBadge(e.okr2.pct)} ${pctBadge(e.okr3.pct)}
+          </div>
+        </div>
+        <span style="color:var(--gray);font-size:20px;">▾</span>
+      </div>
+      <div class="detail-body">
+        <div class="dl-row">
+          <div class="dl-item"><label>Entregáveis</label><p>${e.pills.join(', ')||'—'}</p></div>
+          <div class="dl-item"><label>Registrado em</label><p>${new Date(e.ts).toLocaleString('pt-BR')}</p></div>
+        </div>
+
+        <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.7px;margin:12px 0 8px;">OKR 1 — Antecipar</div>
+        <div class="dl-row">
+          <div class="dl-item"><label>KPI impactado</label><p>${e.okr1.kpi||'—'}</p></div>
+          <div class="dl-item"><label>Antes → Depois</label><p>${e.okr1.impacto||'—'}</p></div>
+          <div class="dl-item"><label>Ganho mensurável</label><p>${e.okr1.ganho||'—'}</p></div>
+          <div class="dl-item"><label>Progresso</label><p>${e.okr1.pct}%</p></div>
+          <div class="dl-item full"><label>Comentário</label><p>${e.okr1.comment||'—'}</p></div>
+        </div>
+
+        <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--magenta);text-transform:uppercase;letter-spacing:.7px;margin:12px 0 8px;">OKR 2 — Diferenciar</div>
+        <div class="dl-row">
+          <div class="dl-item"><label>KPI impactado</label><p>${e.okr2.kpi||'—'}</p></div>
+          <div class="dl-item"><label>Antes → Depois</label><p>${e.okr2.impacto||'—'}</p></div>
+          <div class="dl-item"><label>Ganho mensurável</label><p>${e.okr2.ganho||'—'}</p></div>
+          <div class="dl-item"><label>Progresso</label><p>${e.okr2.pct}%</p></div>
+          <div class="dl-item full"><label>Comentário</label><p>${e.okr2.comment||'—'}</p></div>
+        </div>
+
+        <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--lime);text-transform:uppercase;letter-spacing:.7px;margin:12px 0 8px;">OKR 3 — Excelência</div>
+        <div class="dl-row">
+          <div class="dl-item"><label>KPI impactado</label><p>${e.okr3.kpi||'—'}</p></div>
+          <div class="dl-item"><label>Antes → Depois</label><p>${e.okr3.impacto||'—'}</p></div>
+          <div class="dl-item"><label>Ganho mensurável</label><p>${e.okr3.ganho||'—'}</p></div>
+          <div class="dl-item"><label>Progresso</label><p>${e.okr3.pct}%</p></div>
+          <div class="dl-item full"><label>Comentário</label><p>${e.okr3.comment||'—'}</p></div>
+        </div>
+
+        <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.7px;margin:12px 0 8px;">Processo · Melhoria · Prática</div>
+        <div class="dl-row">
+          <div class="dl-item"><label>Processo</label><p>${e.processo.nome||'—'} ${e.processo.status?'· '+e.processo.status:''}</p><p style="margin-top:3px;color:var(--gray);">${e.processo.resultado||''}</p></div>
+          <div class="dl-item"><label>Melhoria</label><p>${e.melhoria.antes&&e.melhoria.depois?e.melhoria.antes+' → '+e.melhoria.depois:'—'} ${e.melhoria.pct?'('+e.melhoria.pct+')':''}</p><p style="margin-top:3px;color:var(--gray);">${e.melhoria.tipo||''}</p></div>
+          <div class="dl-item"><label>Prática escalável</label><p>${e.escalavel.nome||'—'}</p><p style="margin-top:3px;color:var(--gray);">${e.escalavel.origem?'De: '+e.escalavel.origem:''} ${e.escalavel.replica?'→ '+e.escalavel.replica:''}</p></div>
+          <div class="dl-item"><label>Pronta?</label><p>${e.escalavel.pronta||'—'}</p></div>
+        </div>
+
+        ${e.riscos.principal ? `
+        <div style="background:#FFF0F4;border-radius:10px;padding:12px;margin-top:10px;border-left:3px solid var(--magenta);">
+          <strong style="font-size:12px;color:var(--magenta);">⚠️ Risco: ${e.riscos.principal}</strong>
+          ${e.riscos.suporte?`<p style="font-size:12px;color:var(--gray);margin-top:4px;">${e.riscos.suporte}</p>`:''}
+        </div>` : ''}
+
+        ${e.insight ? `
+        <div style="background:#FFFBEA;border-radius:10px;padding:12px;margin-top:10px;border-left:3px solid var(--yellow);">
+          <strong style="font-size:12px;color:#B8890A;">⭐ Insight do mês:</strong>
+          <p style="font-size:13px;color:var(--dark);margin-top:4px;">${e.insight}</p>
+        </div>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleDetail(card) {
+  const body = card.querySelector('.detail-body');
+  body.classList.toggle('open');
+}
+
+// ── EXECUTIVO ─────────────────────────────────
+function loadExec() {
+  const data = getData();
+  if (!data.length) return;
+
+  const avg = (key) => Math.round(data.reduce((s,e)=>s+e[key].pct,0)/data.length);
+  const a1=avg('okr1'), a2=avg('okr2'), a3=avg('okr3');
+
+  ['1','2','3'].forEach((n,i) => {
+    const v=[a1,a2,a3][i];
+    const ring=document.getElementById('ex-ring'+n);
+    ring.textContent=v+'%';
+    ring.className='score-ring '+ringClass(v);
+    document.getElementById('ex-bar'+n).style.width=v+'%';
+  });
+
+  // Ganhos mais recentes por OKR
+  const last = data[data.length-1];
+  document.getElementById('ex-ganho1').textContent = last.okr1.ganho || (last.okr1.impacto ? last.okr1.kpi+': '+last.okr1.impacto : '—');
+  document.getElementById('ex-ganho2').textContent = last.okr2.ganho || (last.okr2.impacto ? last.okr2.kpi+': '+last.okr2.impacto : '—');
+  document.getElementById('ex-ganho3').textContent = last.okr3.ganho || (last.okr3.impacto ? last.okr3.kpi+': '+last.okr3.impacto : '—');
+
+  // Contadores
+  document.getElementById('ex-cnt-proc').textContent  = data.filter(e=>e.processo.nome).length;
+  document.getElementById('ex-cnt-melh').textContent  = data.filter(e=>e.melhoria.depois).length;
+  document.getElementById('ex-cnt-prat').textContent  = data.filter(e=>e.escalavel.pronta&&e.escalavel.pronta.includes('Pronta')).length;
+  document.getElementById('ex-cnt-alert').textContent = data.filter(e=>e.riscos.principal).length;
+
+  // Insight do mês mais recente com insight
+  const withInsight = data.filter(e=>e.insight).reverse();
+  if (withInsight.length) {
+    document.getElementById('ex-insight-text').textContent = withInsight[0].insight;
+    document.getElementById('ex-insight-month').textContent = withInsight[0].mes + ' · ' + withInsight[0].responsavel;
+  }
+
+  // Melhor destaque do ano — insight com maior pct médio
+  const scored = data.filter(e=>e.insight).map(e=>({
+    ...e, score: Math.round((e.okr1.pct+e.okr2.pct+e.okr3.pct)/3)
+  })).sort((a,b)=>b.score-a.score);
+
+  if (scored.length) {
+    const best = scored[0];
+    document.getElementById('ex-best-text').textContent = best.insight;
+    document.getElementById('ex-best-sub').textContent = best.mes + ' · ' + best.responsavel + ' · Score médio: ' + best.score + '%';
+  }
+
+  // Timeline
+  const sorted = [...data].sort((a,b)=>a.ts.localeCompare(b.ts));
+  document.getElementById('ex-timeline').innerHTML = sorted.map(e => {
+    const sc = Math.round((e.okr1.pct+e.okr2.pct+e.okr3.pct)/3);
+    const gains = [e.okr1.ganho,e.okr2.ganho,e.okr3.ganho].filter(Boolean).join(' · ');
+    return `<div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-month">${e.mes.split(' ')[0].slice(0,3).toUpperCase()}</div>
+      <div class="tl-body">
+        <strong>${e.responsavel}${e.produto?' · '+e.produto:''} — Média: ${sc}%</strong>
+        <p>${gains || (e.okr1.impacto||e.okr2.impacto||'—')}${e.processo.nome?' · Processo: '+e.processo.nome:''}</p>
+      </div>
+      <div>${statusBadge(e.status)}</div>
+    </div>`;
+  }).join('');
+
+  // Síntese automática
+  const overall = Math.round((a1+a2+a3)/3);
+  const totalProc = data.filter(e=>e.processo.nome).length;
+  const totalPrat = data.filter(e=>e.escalavel.pronta&&e.escalavel.pronta.includes('Pronta')).length;
+  let sint = '';
+  if (overall>=80) sint = `A área de Qualidade atingiu <strong>${overall}% de progresso médio</strong> nos três OKRs de 2026, demonstrando execução consistente da diretriz "Antecipar e Diferenciar". Com ${totalProc} processos documentados e ${totalPrat} práticas escaladas, o time se consolidou como parceiro estratégico da operação, antecipando riscos e diferenciando entregas sem inflação de estrutura.`;
+  else if (overall>=50) sint = `A área registra <strong>${overall}% de progresso médio</strong> nos OKRs de 2026. O avanço é positivo — ${totalProc} processos foram estruturados e ${totalPrat} práticas escaladas. Há oportunidade de aceleração nos OKRs com menor índice para garantir entrega plena no segundo semestre.`;
+  else sint = `O progresso acumulado é de <strong>${overall}%</strong>. Recomenda-se revisão das iniciativas e reforço de foco nos OKRs prioritários. ${totalProc>0?totalProc+' processos documentados e ':''} base construída — momento de acelerar execução.`;
+
+  document.getElementById('ex-sintese').innerHTML = sint;
+}
+</script>
+</body>
+</html>
