@@ -1,7 +1,7 @@
 // ==========================================================
 // CONFIGURAÇÃO — cole aqui a URL do Apps Script após publicar
 // ==========================================================
-const API_URL = "COLE_AQUI_A_URL_DO_APPS_SCRIPT";
+const API_URL = "https://script.google.com/macros/s/AKfycbyBwEqWlThjdvoVPAA0AEyAEmgAiOXodmb3WmPCmGi2l3OSOML4-wKBiykyWQk9u3tfpA/exec";
 
 // ---------------- API ----------------
 async function callApi(action, params = {}) {
