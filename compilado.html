@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compilado por Conta — Qualidade & Performance 2026</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div>
+    <h1>Qualidade & Performance — Diário de Bordo Executivo</h1>
+    <p id="subtitulo">Visão geral das iniciativas e resultados por conta</p>
+  </div>
+  <div class="session" id="sessionBar"></div>
+</header>
+
+<nav class="tabs" id="navTabs">
+  <a href="index.html">Início</a>
+  <a href="reportar.html">1 · Reportar</a>
+  <a href="relatorios.html">2 · Ver Relatórios</a>
+  <a href="compilado.html" class="active">3 · Compilado</a>
+  <a href="diretoria.html" id="navDiretoria" style="display:none;">4 · Direção Executiva</a>
+</nav>
+
+<main>
+
+  <div class="section" id="seletorDiretoriaBox">
+    <div class="section-title"><span class="badge">🔒</span>Visão para apresentação</div>
+    <p style="font-size:13px; color:var(--muted); margin-top:-8px;">
+      Escolha qual diretoria você vai apresentar. Só as contas dessa diretoria aparecem na tela — nada da outra diretoria fica visível, mesmo em compartilhamento de tela.
+    </p>
+    <div class="grid cols-2">
+      <div>
+        <label>Diretoria</label>
+        <select id="diretoriaSelect" onchange="onDiretoriaChange()"></select>
+      </div>
+      <div style="display:flex; align-items:flex-end;">
+        <button class="secondary" onclick="copiarLinkTravado()">Copiar link travado nessa diretoria</button>
+      </div>
+    </div>
+    <div class="msg" id="linkMsg"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="badge">1</span>Resumo executivo — por conta</div>
+    <table>
+      <thead>
+        <tr><th>Conta</th><th>Em andamento</th><th>Concluídas</th><th>Em risco</th><th>Savings (R$)</th></tr>
+      </thead>
+      <tbody id="resumoTbody"></tbody>
+    </table>
+    <div class="legend">
+      <span><span class="status-dot" style="background:#6b8fd1"></span>Não iniciado</span>
+      <span><span class="status-dot" style="background:var(--acc-yellow)"></span>Em andamento</span>
+      <span><span class="status-dot" style="background:var(--acc-green)"></span>Concluído</span>
+      <span><span class="status-dot" style="background:var(--acc-red)"></span>Em risco</span>
+    </div>
+  </div>
+
+  <div class="grid cols-2">
+    <div class="section">
+      <div class="section-title"><span class="badge">2</span>Resultados por pilar (acumulado)</div>
+      <div class="grid cols-2" id="pilaresGrid"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title"><span class="badge">3</span>Detalhe por conta</div>
+      <label>Escolha a conta</label>
+      <select id="contaSelect" onchange="renderDetalheConta()"></select>
+      <table style="margin-top:10px;">
+        <thead><tr><th>Iniciativa</th><th>Owner</th><th>Status</th><th>Último resultado</th></tr></thead>
+        <tbody id="detalheTbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<script src="app.js"></script>
+<script>
+let session, compilado, config;
+let contaParaDiretoria = {};
+
+async function init() {
+  session = requireSession(true);
+  if (!session) return;
+  renderSessionBar();
+  document.getElementById('navDiretoria').style.display = 'inline-block';
+
+  config = await callApi('getConfig');
+  Object.entries(config.diretorias).forEach(([dir, contas]) => {
+    contas.forEach(c => { contaParaDiretoria[c] = dir; });
+  });
+
+  compilado = await callApi('getCompilado');
+
+  const params = new URLSearchParams(window.location.search);
+  const dirParam = params.get('dir');
+  const travado = params.get('lock') === '1';
+
+  const nomesDiretorias = Object.keys(config.diretorias);
+  const sel = document.getElementById('diretoriaSelect');
+  sel.innerHTML = '<option value="">Todas as diretorias (uso interno)</option>' +
+    nomesDiretorias.map(d => `<option value="${d}">${d}</option>`).join('');
+
+  if (dirParam && nomesDiretorias.includes(dirParam)) {
+    sel.value = dirParam;
+  }
+
+  if (travado && dirParam) {
+    document.getElementById('seletorDiretoriaBox').style.display = 'none';
+    document.getElementById('navTabs').style.display = 'none';
+    document.getElementById('subtitulo').textContent = dirParam;
+  }
+
+  renderTudo();
+}
+
+function onDiretoriaChange() {
+  renderTudo();
+}
+
+function contasVisiveis() {
+  const dirSelecionada = document.getElementById('diretoriaSelect').value;
+  if (!dirSelecionada) return Object.keys(compilado.porConta);
+  return config.diretorias[dirSelecionada] || [];
+}
+
+function copiarLinkTravado() {
+  const dir = document.getElementById('diretoriaSelect').value;
+  if (!dir) return showMsg('linkMsg', 'Escolha uma diretoria específica primeiro.', false);
+  const url = new URL(window.location.href);
+  url.searchParams.set('dir', dir);
+  url.searchParams.set('lock', '1');
+  navigator.clipboard.writeText(url.toString()).then(() => {
+    showMsg('linkMsg', 'Link copiado! Ele já abre travado só nessa diretoria, sem menu e sem opção de trocar.', true);
+  }).catch(() => {
+    showMsg('linkMsg', 'Não consegui copiar automaticamente. URL: ' + url.toString(), false);
+  });
+}
+
+function renderTudo() {
+  renderResumo();
+  renderPilares();
+  renderContaSelect();
+}
+
+function renderResumo() {
+  const tbody = document.getElementById('resumoTbody');
+  const contas = contasVisiveis();
+  let totais = { emAndamento: 0, concluidas: 0, emRisco: 0, savings: 0 };
+
+  tbody.innerHTML = contas.map(conta => {
+    const c = compilado.porConta[conta];
+    if (!c) return '';
+    totais.emAndamento += c.emAndamento;
+    totais.concluidas += c.concluidas;
+    totais.emRisco += c.emRisco;
+    totais.savings += c.savings;
+    return `<tr>
+      <td>${contaTagHtml(conta)}</td>
+      <td>${c.emAndamento}</td>
+      <td>${c.concluidas}</td>
+      <td>${c.emRisco}</td>
+      <td>${c.savings ? 'R$ ' + c.savings.toLocaleString('pt-BR') : '—'}</td>
+    </tr>`;
+  }).join('') + `<tr style="font-weight:800;">
+      <td>TOTAL</td>
+      <td>${totais.emAndamento}</td>
+      <td>${totais.concluidas}</td>
+      <td>${totais.emRisco}</td>
+      <td>R$ ${totais.savings.toLocaleString('pt-BR')}</td>
+    </tr>`;
+}
+
+function renderPilares() {
+  const grid = document.getElementById('pilaresGrid');
+  const contasOk = new Set(contasVisiveis());
+  const pilares = Object.keys(compilado.porPilar);
+  grid.innerHTML = pilares.map(p => {
+    const itens = compilado.porPilar[p].filter(i => contasOk.has(i.conta));
+    return `<div class="kpi-card">
+      <div class="kpi-label">${p}</div>
+      <div class="kpi-value">${itens.length}</div>
+      <div style="font-size:11px; color:var(--muted); margin-top:4px;">resultado(s) lançado(s)</div>
+    </div>`;
+  }).join('');
+}
+
+function renderContaSelect() {
+  const sel = document.getElementById('contaSelect');
+  const contas = contasVisiveis();
+  sel.innerHTML = contas.map(c => `<option value="${c}">${c}</option>`).join('');
+  renderDetalheConta();
+}
+
+function renderDetalheConta() {
+  const conta = document.getElementById('contaSelect').value;
+  const c = compilado.porConta[conta];
+  const tbody = document.getElementById('detalheTbody');
+  if (!c || c.iniciativas.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Nenhuma iniciativa cadastrada para essa conta ainda.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = c.iniciativas.map(i => `
+    <tr>
+      <td>${i.projeto}</td>
+      <td>${i.owner}</td>
+      <td>${statusPillHtml(i.statusAtual)}</td>
+      <td>${i.ultimoResultado || '—'}</td>
+    </tr>
+  `).join('');
+}
+
+init();
+</script>
+</body>
+</html>

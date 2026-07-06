@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ver Relatórios — Qualidade & Performance 2026</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div>
+    <h1>Qualidade & Performance — 2026</h1>
+    <p>Gerência Cida Santos</p>
+  </div>
+  <div class="session" id="sessionBar"></div>
+</header>
+
+<nav class="tabs">
+  <a href="index.html">Início</a>
+  <a href="reportar.html">1 · Reportar</a>
+  <a href="relatorios.html" class="active">2 · Ver Relatórios</a>
+  <a href="compilado.html" id="navCompilado" style="display:none;">3 · Compilado</a>
+  <a href="diretoria.html" id="navDiretoria" style="display:none;">4 · Direção Executiva</a>
+</nav>
+
+<main>
+  <div class="section">
+    <div class="section-title"><span class="badge">2</span><span id="tituloLista">Histórico de reports</span></div>
+
+    <div class="grid cols-3" id="filtros" style="display:none; margin-bottom:6px;">
+      <div>
+        <label>Filtrar por conta</label>
+        <select id="filtroConta"><option value="">Todas</option></select>
+      </div>
+      <div>
+        <label>Filtrar por responsável</label>
+        <select id="filtroResponsavel"><option value="">Todos</option></select>
+      </div>
+      <div>
+        <label>Filtrar por mês</label>
+        <select id="filtroMes"><option value="">Todos</option></select>
+      </div>
+    </div>
+
+    <table id="tabela">
+      <thead>
+        <tr>
+          <th>Data</th><th>Conta</th><th>Iniciativa</th><th>Responsável</th>
+          <th>Mês Ref.</th><th>Status</th><th>Pilar</th><th>Resultado</th><th>Próximo marco</th><th>Comentário</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty-state" id="emptyState" style="display:none;">Nenhum report encontrado ainda.</div>
+  </div>
+</main>
+
+<script src="app.js"></script>
+<script>
+let session, todosReports = [], mapaIniciativas = {};
+
+async function init() {
+  session = requireSession();
+  if (!session) return;
+  renderSessionBar();
+
+  if (session.isAdmin) {
+    document.getElementById('navCompilado').style.display = 'inline-block';
+    document.getElementById('navDiretoria').style.display = 'inline-block';
+    document.getElementById('tituloLista').textContent = 'Histórico de reports — toda a equipe';
+    document.getElementById('filtros').style.display = 'grid';
+  } else {
+    document.getElementById('tituloLista').textContent = 'Meu histórico de reports';
+  }
+
+  const iniciativas = await callApi('getIniciativas', { nome: session.nome, isAdmin: session.isAdmin });
+  iniciativas.forEach(i => { mapaIniciativas[i['ID']] = i['Projeto/Iniciativa']; });
+
+  todosReports = await callApi('getReports', { nome: session.nome, isAdmin: session.isAdmin });
+  todosReports.sort((a, b) => new Date(b['Timestamp']) - new Date(a['Timestamp']));
+
+  if (session.isAdmin) montarFiltros();
+  render(todosReports);
+}
+
+function montarFiltros() {
+  const contas = [...new Set(todosReports.map(r => r['Conta']))].filter(Boolean);
+  const resps = [...new Set(todosReports.map(r => r['Responsável']))].filter(Boolean);
+  const meses = [...new Set(todosReports.map(r => r['Mês Referência']))].filter(Boolean);
+
+  document.getElementById('filtroConta').innerHTML += contas.map(c => `<option value="${c}">${c}</option>`).join('');
+  document.getElementById('filtroResponsavel').innerHTML += resps.map(r => `<option value="${r}">${r}</option>`).join('');
+  document.getElementById('filtroMes').innerHTML += meses.map(m => `<option value="${m}">${m}</option>`).join('');
+
+  ['filtroConta','filtroResponsavel','filtroMes'].forEach(id =>
+    document.getElementById(id).addEventListener('change', aplicarFiltros)
+  );
+}
+
+function aplicarFiltros() {
+  const conta = document.getElementById('filtroConta').value;
+  const resp = document.getElementById('filtroResponsavel').value;
+  const mes = document.getElementById('filtroMes').value;
+  const filtrado = todosReports.filter(r =>
+    (!conta || r['Conta'] === conta) &&
+    (!resp || r['Responsável'] === resp) &&
+    (!mes || r['Mês Referência'] === mes)
+  );
+  render(filtrado);
+}
+
+function render(lista) {
+  const tbody = document.getElementById('tbody');
+  if (lista.length === 0) {
+    document.getElementById('emptyState').style.display = 'block';
+    tbody.innerHTML = '';
+    return;
+  }
+  document.getElementById('emptyState').style.display = 'none';
+  tbody.innerHTML = lista.map(r => `
+    <tr>
+      <td>${formatDate(r['Timestamp'])}</td>
+      <td>${contaTagHtml(r['Conta'])}</td>
+      <td>${mapaIniciativas[r['ID Iniciativa']] || r['ID Iniciativa'] || ''}</td>
+      <td>${r['Responsável'] || ''}</td>
+      <td>${r['Mês Referência'] || ''}</td>
+      <td>${statusPillHtml(r['Status'])}</td>
+      <td>${r['Pilar do Resultado'] || ''}</td>
+      <td>${r['Valor do Resultado'] || ''}</td>
+      <td>${r['Próximo Marco'] || ''}</td>
+      <td>${r['Comentário'] || ''}</td>
+    </tr>
+  `).join('');
+}
+
+init();
+</script>
+</body>
+</html>

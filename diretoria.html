@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Direção Executiva — Qualidade & Performance 2026</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div>
+    <h1>Qualidade & Performance — 2026</h1>
+    <p>Gerência Cida Santos</p>
+  </div>
+  <div class="session" id="sessionBar"></div>
+</header>
+
+<nav class="tabs">
+  <a href="index.html">Início</a>
+  <a href="reportar.html">1 · Reportar</a>
+  <a href="relatorios.html">2 · Ver Relatórios</a>
+  <a href="compilado.html">3 · Compilado</a>
+  <a href="diretoria.html" class="active">4 · Direção Executiva</a>
+</nav>
+
+<main>
+
+  <div class="section">
+    <div class="section-title"><span class="badge">A</span>Financeiro (savings e automações)</div>
+    <p style="font-size:13px; color:var(--muted); margin-top:-8px;">
+      Só você lança aqui. O time nunca imputa valor financeiro — só p.p. ou ganho estimado no report deles.
+    </p>
+    <div class="grid cols-2">
+      <div>
+        <label>Conta</label>
+        <select id="fin_conta"></select>
+        <label>Mês de referência</label>
+        <input type="text" id="fin_mes" placeholder="Ex: Jul/2026">
+      </div>
+      <div>
+        <label>Savings (R$)</label>
+        <input type="number" id="fin_savings" placeholder="Ex: 45000">
+        <label>Automações implantadas (nº, opcional)</label>
+        <input type="number" id="fin_automacoes" placeholder="Ex: 1">
+      </div>
+    </div>
+    <label>Observação (opcional)</label>
+    <textarea id="fin_obs" placeholder="Como esse valor foi calculado, contexto, etc."></textarea>
+    <button class="primary" onclick="salvarFinanceiro()">Lançar</button>
+    <div class="msg" id="finMsg"></div>
+
+    <table style="margin-top:20px;">
+      <thead><tr><th>Data lançamento</th><th>Conta</th><th>Mês Ref.</th><th>Savings</th><th>Automações</th><th>Observação</th></tr></thead>
+      <tbody id="finTbody"></tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="badge">B</span>Onde preciso de apoio da diretoria</div>
+    <div class="grid cols-2">
+      <div>
+        <label>Conta</label>
+        <select id="apoio_conta"></select>
+        <label>Mês de referência</label>
+        <input type="text" id="apoio_mes" placeholder="Ex: Jul/2026">
+      </div>
+      <div>
+        <label>Impacto</label>
+        <select id="apoio_impacto">
+          <option>Alto</option><option>Médio</option><option>Baixo</option>
+        </select>
+        <label>Status</label>
+        <select id="apoio_status">
+          <option>Em aberto</option><option>Em negociação</option><option>Aprovado</option><option>Negado</option>
+        </select>
+      </div>
+    </div>
+    <label>Necessidade</label>
+    <textarea id="apoio_necessidade" placeholder="Ex: Aprovação de HC para sustentação das iniciativas"></textarea>
+    <button class="primary" onclick="salvarApoio()">Registrar</button>
+    <div class="msg" id="apoioMsg"></div>
+
+    <table style="margin-top:20px;">
+      <thead><tr><th>Data</th><th>Conta</th><th>Mês Ref.</th><th>Necessidade</th><th>Impacto</th><th>Status</th></tr></thead>
+      <tbody id="apoioTbody"></tbody>
+    </table>
+  </div>
+
+</main>
+
+<script src="app.js"></script>
+<script>
+let session;
+
+async function init() {
+  session = requireSession(true);
+  if (!session) return;
+  renderSessionBar();
+
+  const config = await callApi('getConfig');
+  fillSelect('fin_conta', config.contas);
+  fillSelect('apoio_conta', config.contas);
+  document.getElementById('fin_mes').value = currentMonthRef();
+  document.getElementById('apoio_mes').value = currentMonthRef();
+
+  await carregarFinanceiro();
+  await carregarApoio();
+}
+
+function fillSelect(id, options) {
+  document.getElementById(id).innerHTML = options.map(o => `<option value="${o}">${o}</option>`).join('');
+}
+
+async function salvarFinanceiro() {
+  const payload = {
+    conta: document.getElementById('fin_conta').value,
+    mesReferencia: document.getElementById('fin_mes').value,
+    savings: document.getElementById('fin_savings').value,
+    automacoes: document.getElementById('fin_automacoes').value,
+    observacao: document.getElementById('fin_obs').value
+  };
+  if (!payload.savings) return showMsg('finMsg', 'Informe o valor de savings.', false);
+
+  try {
+    await callApi('saveFinanceiro', payload);
+    showMsg('finMsg', 'Lançado! Isso vira uma linha nova no histórico — nada é sobrescrito.', true);
+    document.getElementById('fin_savings').value = '';
+    document.getElementById('fin_automacoes').value = '';
+    document.getElementById('fin_obs').value = '';
+    await carregarFinanceiro();
+  } catch (e) {
+    showMsg('finMsg', 'Erro: ' + e.message, false);
+  }
+}
+
+async function carregarFinanceiro() {
+  const dados = await callApi('getFinanceiro');
+  dados.sort((a, b) => new Date(b['Timestamp']) - new Date(a['Timestamp']));
+  document.getElementById('finTbody').innerHTML = dados.length ? dados.map(f => `
+    <tr>
+      <td>${formatDate(f['Timestamp'])}</td>
+      <td>${contaTagHtml(f['Conta'])}</td>
+      <td>${f['Mês Referência'] || ''}</td>
+      <td>R$ ${Number(f['Savings (R$)']).toLocaleString('pt-BR')}</td>
+      <td>${f['Automações Implantadas'] || '—'}</td>
+      <td>${f['Observação'] || ''}</td>
+    </tr>
+  `).join('') : '<tr><td colspan="6" class="empty-state">Nenhum lançamento ainda.</td></tr>';
+}
+
+async function salvarApoio() {
+  const payload = {
+    conta: document.getElementById('apoio_conta').value,
+    mesReferencia: document.getElementById('apoio_mes').value,
+    necessidade: document.getElementById('apoio_necessidade').value,
+    impacto: document.getElementById('apoio_impacto').value,
+    status: document.getElementById('apoio_status').value
+  };
+  if (!payload.necessidade) return showMsg('apoioMsg', 'Descreva a necessidade.', false);
+
+  try {
+    await callApi('saveApoio', payload);
+    showMsg('apoioMsg', 'Registrado! Fica salvo no histórico de pedidos de apoio.', true);
+    document.getElementById('apoio_necessidade').value = '';
+    await carregarApoio();
+  } catch (e) {
+    showMsg('apoioMsg', 'Erro: ' + e.message, false);
+  }
+}
+
+async function carregarApoio() {
+  const dados = await callApi('getApoio');
+  dados.sort((a, b) => new Date(b['Timestamp']) - new Date(a['Timestamp']));
+  document.getElementById('apoioTbody').innerHTML = dados.length ? dados.map(a => `
+    <tr>
+      <td>${formatDate(a['Timestamp'])}</td>
+      <td>${contaTagHtml(a['Conta'])}</td>
+      <td>${a['Mês Referência'] || ''}</td>
+      <td>${a['Necessidade'] || ''}</td>
+      <td>${a['Impacto'] || ''}</td>
+      <td>${a['Status'] || ''}</td>
+    </tr>
+  `).join('') : '<tr><td colspan="6" class="empty-state">Nenhum pedido registrado ainda.</td></tr>';
+}
+
+init();
+</script>
+</body>
+</html>

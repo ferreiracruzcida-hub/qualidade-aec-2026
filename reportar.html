@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reportar — Qualidade & Performance 2026</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div>
+    <h1>Qualidade & Performance — 2026</h1>
+    <p>Gerência Cida Santos</p>
+  </div>
+  <div class="session" id="sessionBar"></div>
+</header>
+
+<nav class="tabs">
+  <a href="index.html">Início</a>
+  <a href="reportar.html" class="active">1 · Reportar</a>
+  <a href="relatorios.html">2 · Ver Relatórios</a>
+  <a href="compilado.html" id="navCompilado" style="display:none;">3 · Compilado</a>
+  <a href="diretoria.html" id="navDiretoria" style="display:none;">4 · Direção Executiva</a>
+</nav>
+
+<main>
+
+  <div class="section">
+    <div class="section-title"><span class="badge">A</span>Cadastrar nova iniciativa</div>
+    <p style="font-size:13px; color:var(--muted); margin-top:-8px;">Preencha isso só uma vez, quando a iniciativa começar. Depois é só usar o report mensal abaixo.</p>
+    <div class="grid cols-2">
+      <div>
+        <label>Conta</label>
+        <select id="ini_conta"></select>
+        <label>Projeto / Iniciativa</label>
+        <input type="text" id="ini_projeto" placeholder="Ex: Revisão da Monitoria">
+        <label>Owner (responsável)</label>
+        <input type="text" id="ini_owner" placeholder="Seu nome">
+        <label>Data de início</label>
+        <input type="date" id="ini_data">
+      </div>
+      <div>
+        <label>Problema / Dor</label>
+        <textarea id="ini_problema" placeholder="Qual dor essa iniciativa resolve?"></textarea>
+        <label>Objetivo</label>
+        <textarea id="ini_objetivo" placeholder="O que essa iniciativa busca alcançar?"></textarea>
+        <label>Pilar principal impactado</label>
+        <select id="ini_pilar"></select>
+      </div>
+    </div>
+    <button class="primary" onclick="criarIniciativa()">Cadastrar iniciativa</button>
+    <div class="msg" id="iniMsg"></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="badge">B</span>Report mensal</div>
+    <p style="font-size:13px; color:var(--muted); margin-top:-8px;">
+      Rápido: status, resultado do mês (em p.p. ou ganho estimado — sem valor financeiro) e próximo marco.
+    </p>
+    <div class="grid cols-2">
+      <div>
+        <label>Iniciativa</label>
+        <select id="rep_iniciativa"><option value="">Carregando...</option></select>
+        <label>Mês de referência</label>
+        <input type="text" id="rep_mes" placeholder="Ex: Jul/2026">
+        <label>Status</label>
+        <select id="rep_status"></select>
+      </div>
+      <div>
+        <label>Pilar do resultado</label>
+        <select id="rep_pilar"></select>
+        <label>Valor do resultado (p.p. ou ganho estimado)</label>
+        <input type="text" id="rep_valor" placeholder="Ex: +2 p.p. em CSAT">
+        <label>Próximo marco</label>
+        <input type="text" id="rep_marco" placeholder="Ex: Apresentação de resultados (15/07)">
+      </div>
+    </div>
+    <label>Comentário (opcional)</label>
+    <textarea id="rep_comentario" placeholder="Alguma observação curta sobre o mês"></textarea>
+    <button class="primary" onclick="enviarReport()">Enviar report</button>
+    <div class="msg" id="repMsg"></div>
+  </div>
+
+</main>
+
+<script src="app.js"></script>
+<script>
+let session, config, minhasIniciativas = [];
+
+async function init() {
+  session = requireSession();
+  if (!session) return;
+  renderSessionBar();
+  if (session.isAdmin) {
+    document.getElementById('navCompilado').style.display = 'inline-block';
+    document.getElementById('navDiretoria').style.display = 'inline-block';
+  }
+  document.getElementById('ini_owner').value = session.nome;
+  document.getElementById('rep_mes').value = currentMonthRef();
+
+  config = await callApi('getConfig');
+  fillSelect('ini_conta', config.contas);
+  fillSelect('ini_pilar', config.pilaresTime);
+  fillSelect('rep_status', config.statusOpcoes);
+  fillSelect('rep_pilar', config.pilaresTime);
+
+  await carregarIniciativas();
+}
+
+function fillSelect(id, options) {
+  document.getElementById(id).innerHTML = options.map(o => `<option value="${o}">${o}</option>`).join('');
+}
+
+async function carregarIniciativas() {
+  minhasIniciativas = await callApi('getIniciativas', { nome: session.nome, isAdmin: session.isAdmin });
+  const sel = document.getElementById('rep_iniciativa');
+  if (minhasIniciativas.length === 0) {
+    sel.innerHTML = '<option value="">Nenhuma iniciativa cadastrada ainda — cadastre uma acima</option>';
+    return;
+  }
+  sel.innerHTML = minhasIniciativas.map(i =>
+    `<option value="${i['ID']}">${i['Conta']} · ${i['Projeto/Iniciativa']}</option>`
+  ).join('');
+}
+
+async function criarIniciativa() {
+  const payload = {
+    conta: document.getElementById('ini_conta').value,
+    projeto: document.getElementById('ini_projeto').value,
+    problema: document.getElementById('ini_problema').value,
+    objetivo: document.getElementById('ini_objetivo').value,
+    owner: document.getElementById('ini_owner').value,
+    dataInicio: document.getElementById('ini_data').value,
+    pilar: document.getElementById('ini_pilar').value
+  };
+  if (!payload.projeto || !payload.owner) return showMsg('iniMsg', 'Preencha ao menos Projeto e Owner.', false);
+
+  try {
+    await callApi('createIniciativa', payload);
+    showMsg('iniMsg', 'Iniciativa cadastrada! Já aparece no report mensal abaixo.', true);
+    document.getElementById('ini_projeto').value = '';
+    document.getElementById('ini_problema').value = '';
+    document.getElementById('ini_objetivo').value = '';
+    await carregarIniciativas();
+  } catch (e) {
+    showMsg('iniMsg', 'Erro: ' + e.message, false);
+  }
+}
+
+async function enviarReport() {
+  const idIniciativa = document.getElementById('rep_iniciativa').value;
+  if (!idIniciativa) return showMsg('repMsg', 'Selecione uma iniciativa.', false);
+  const ini = minhasIniciativas.find(i => i['ID'] === idIniciativa);
+
+  const payload = {
+    idIniciativa,
+    conta: ini['Conta'],
+    responsavel: session.nome,
+    mesReferencia: document.getElementById('rep_mes').value,
+    status: document.getElementById('rep_status').value,
+    pilarResultado: document.getElementById('rep_pilar').value,
+    valorResultado: document.getElementById('rep_valor').value,
+    proximoMarco: document.getElementById('rep_marco').value,
+    comentario: document.getElementById('rep_comentario').value
+  };
+
+  try {
+    await callApi('submitReport', payload);
+    showMsg('repMsg', 'Report enviado! Isso fica salvo no histórico e alimenta o compilado da conta.', true);
+    document.getElementById('rep_valor').value = '';
+    document.getElementById('rep_marco').value = '';
+    document.getElementById('rep_comentario').value = '';
+  } catch (e) {
+    showMsg('repMsg', 'Erro: ' + e.message, false);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
