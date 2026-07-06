@@ -61,8 +61,9 @@
 
   <div class="grid cols-2">
     <div class="section">
-      <div class="section-title"><span class="badge">2</span>Resultados por pilar (acumulado)</div>
-      <div class="grid cols-2" id="pilaresGrid"></div>
+      <div class="section-title"><span class="badge">2</span>Pipeline de iniciativas</div>
+      <p style="font-size:12px; color:var(--muted); margin-top:-10px;">Quantas iniciativas estão em cada etapa hoje.</p>
+      <div class="grid cols-2" id="etapasGrid"></div>
     </div>
 
     <div class="section">
@@ -70,10 +71,16 @@
       <label>Escolha a conta</label>
       <select id="contaSelect" onchange="renderDetalheConta()"></select>
       <table style="margin-top:10px;">
-        <thead><tr><th>Iniciativa</th><th>Owner</th><th>Status</th><th>Último resultado</th><th>Savings vinculado</th></tr></thead>
+        <thead><tr><th>Iniciativa</th><th>Owner</th><th>Etapa</th><th>Status</th><th>Savings vinculado</th></tr></thead>
         <tbody id="detalheTbody"></tbody>
       </table>
     </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title"><span class="badge">4</span>Evolução por KPI (antes x depois)</div>
+    <p style="font-size:12px; color:var(--muted); margin-top:-10px;">Baseline é o primeiro valor reportado; atual é o valor mais recente enviado pelo time.</p>
+    <div id="kpiGrid"></div>
   </div>
 
 </main>
@@ -143,8 +150,9 @@ function copiarLinkTravado() {
 
 function renderTudo() {
   renderResumo();
-  renderPilares();
+  renderEtapas();
   renderContaSelect();
+  renderKpis();
 }
 
 function renderResumo() {
@@ -175,18 +183,53 @@ function renderResumo() {
     </tr>`;
 }
 
-function renderPilares() {
-  const grid = document.getElementById('pilaresGrid');
+function renderEtapas() {
+  // Recalcula o funil só com as iniciativas das contas visíveis
   const contasOk = new Set(contasVisiveis());
-  const pilares = Object.keys(compilado.porPilar);
-  grid.innerHTML = pilares.map(p => {
-    const itens = compilado.porPilar[p].filter(i => contasOk.has(i.conta));
-    return `<div class="kpi-card">
-      <div class="kpi-label">${p}</div>
-      <div class="kpi-value">${itens.length}</div>
-      <div style="font-size:11px; color:var(--muted); margin-top:4px;">resultado(s) lançado(s)</div>
+  const contagem = {};
+  Object.keys(compilado.etapaCounts).forEach(e => { contagem[e] = 0; });
+  Object.entries(compilado.porConta).forEach(([conta, c]) => {
+    if (!contasOk.has(conta)) return;
+    c.iniciativas.forEach(i => {
+      if (contagem[i.etapaAtual] !== undefined) contagem[i.etapaAtual]++;
+    });
+  });
+
+  const grid = document.getElementById('etapasGrid');
+  grid.innerHTML = Object.entries(contagem).map(([etapa, qtd]) => `
+    <div class="kpi-card">
+      <div class="kpi-label">${etapa}</div>
+      <div class="kpi-value">${qtd}</div>
+    </div>
+  `).join('');
+}
+
+function renderKpis() {
+  const contasOk = new Set(contasVisiveis());
+  const grid = document.getElementById('kpiGrid');
+  const kpis = Object.keys(compilado.porKpi);
+
+  const blocos = kpis.map(kpi => {
+    const porConta = compilado.porKpi[kpi];
+    const linhas = Object.entries(porConta).filter(([conta]) => contasOk.has(conta));
+    if (linhas.length === 0) return '';
+    const linhasHtml = linhas.map(([conta, v]) => `
+      <tr>
+        <td>${contaTagHtml(conta)}</td>
+        <td>${v.baseline || '—'}</td>
+        <td style="font-weight:700;">${v.atual || '—'}</td>
+      </tr>
+    `).join('');
+    return `<div style="margin-bottom:18px;">
+      <div style="font-size:12px; font-weight:800; text-transform:uppercase; color:var(--navy); margin-bottom:8px;">${kpi}</div>
+      <table>
+        <thead><tr><th>Conta</th><th>De (baseline)</th><th>Para (atual)</th></tr></thead>
+        <tbody>${linhasHtml}</tbody>
+      </table>
     </div>`;
-  }).join('');
+  }).filter(Boolean).join('');
+
+  grid.innerHTML = blocos || '<div class="empty-state">Nenhum KPI reportado ainda pelo time.</div>';
 }
 
 function renderContaSelect() {
@@ -201,15 +244,15 @@ function renderDetalheConta() {
   const c = compilado.porConta[conta];
   const tbody = document.getElementById('detalheTbody');
   if (!c || c.iniciativas.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4" class="empty-state">Nenhuma iniciativa cadastrada para essa conta ainda.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Nenhuma iniciativa cadastrada para essa conta ainda.</td></tr>';
     return;
   }
   tbody.innerHTML = c.iniciativas.map(i => `
     <tr>
       <td>${i.projeto}</td>
       <td>${i.owner}</td>
+      <td>${i.etapaAtual || '—'}</td>
       <td>${statusPillHtml(i.statusAtual)}</td>
-      <td>${i.ultimoResultado || '—'}</td>
       <td>${i.savingsVinculado ? 'R$ ' + i.savingsVinculado.toLocaleString('pt-BR') : '—'}</td>
     </tr>
   `).join('');

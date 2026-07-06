@@ -47,7 +47,7 @@
       <thead>
         <tr>
           <th>Data</th><th>Conta</th><th>Iniciativa</th><th>Responsável</th>
-          <th>Mês Ref.</th><th>Status</th><th>Pilar</th><th>Resultado</th><th>Próximo marco</th><th>Comentário</th>
+          <th>Mês Ref.</th><th>Status</th><th>Etapa</th><th>KPI</th><th>De</th><th>Para</th><th>Próximo marco</th><th>Comentário</th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
@@ -126,8 +126,10 @@ function render(lista) {
       <td>${r['Responsável'] || ''}</td>
       <td>${r['Mês Referência'] || ''}</td>
       <td>${statusPillHtml(r['Status'])}</td>
-      <td>${r['Pilar do Resultado'] || ''}</td>
-      <td>${r['Valor do Resultado'] || ''}</td>
+      <td>${r['Etapa'] || ''}</td>
+      <td>${r['KPI'] || ''}</td>
+      <td>${r['Valor Anterior'] || ''}</td>
+      <td>${r['Valor Atual'] || ''}</td>
       <td>${r['Próximo Marco'] || ''}</td>
       <td>${r['Comentário'] || ''}</td>
     </tr>

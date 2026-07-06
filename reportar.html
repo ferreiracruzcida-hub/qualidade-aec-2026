@@ -45,8 +45,8 @@
         <textarea id="ini_problema" placeholder="Qual dor essa iniciativa resolve?"></textarea>
         <label>Objetivo</label>
         <textarea id="ini_objetivo" placeholder="O que essa iniciativa busca alcançar?"></textarea>
-        <label>Pilar principal impactado</label>
-        <select id="ini_pilar"></select>
+        <label>Etapa inicial</label>
+        <select id="ini_etapa"></select>
       </div>
     </div>
     <button class="primary" onclick="criarIniciativa()">Cadastrar iniciativa</button>
@@ -56,7 +56,7 @@
   <div class="section">
     <div class="section-title"><span class="badge">B</span>Report mensal</div>
     <p style="font-size:13px; color:var(--muted); margin-top:-8px;">
-      Rápido: status, resultado do mês (em p.p. ou ganho estimado — sem valor financeiro) e próximo marco.
+      Rápido: em que etapa a iniciativa está, o KPI que ela impacta (com o antes e o depois) e o próximo marco.
     </p>
     <div class="grid cols-2">
       <div>
@@ -66,12 +66,16 @@
         <input type="text" id="rep_mes" placeholder="Ex: Jul/2026">
         <label>Status</label>
         <select id="rep_status"></select>
+        <label>Etapa atual</label>
+        <select id="rep_etapa"></select>
       </div>
       <div>
-        <label>Pilar do resultado</label>
-        <select id="rep_pilar"></select>
-        <label>Valor do resultado (p.p. ou ganho estimado)</label>
-        <input type="text" id="rep_valor" placeholder="Ex: +2 p.p. em CSAT">
+        <label>KPI impactado</label>
+        <select id="rep_kpi"></select>
+        <label>Valor anterior (o que estávamos fazendo)</label>
+        <input type="text" id="rep_valor_anterior" placeholder="Ex: 78%">
+        <label>Valor atual (o que estamos fazendo agora)</label>
+        <input type="text" id="rep_valor_atual" placeholder="Ex: 82%">
         <label>Próximo marco</label>
         <input type="text" id="rep_marco" placeholder="Ex: Apresentação de resultados (15/07)">
       </div>
@@ -101,9 +105,10 @@ async function init() {
 
   config = await callApi('getConfig');
   fillSelect('ini_conta', config.contas);
-  fillSelect('ini_pilar', config.pilaresTime);
+  fillSelect('ini_etapa', config.etapas);
   fillSelect('rep_status', config.statusOpcoes);
-  fillSelect('rep_pilar', config.pilaresTime);
+  fillSelect('rep_etapa', config.etapas);
+  fillSelect('rep_kpi', config.kpisTime);
 
   await carregarIniciativas();
 }
@@ -130,7 +135,7 @@ async function criarIniciativa() {
     objetivo: document.getElementById('ini_objetivo').value,
     owner: document.getElementById('ini_owner').value,
     dataInicio: document.getElementById('ini_data').value,
-    pilar: document.getElementById('ini_pilar').value
+    etapaInicial: document.getElementById('ini_etapa').value
   };
   if (!payload.projeto || !payload.owner) return showMsg('iniMsg', 'Preencha ao menos Projeto e Owner.', false);
 
@@ -148,7 +153,7 @@ async function criarIniciativa() {
       'Objetivo': payload.objetivo,
       'Owner': payload.owner,
       'Data de Início': payload.dataInicio,
-      'Pilar Principal': payload.pilar
+      'Etapa Inicial': payload.etapaInicial
     });
     renderIniciativaSelect();
     document.getElementById('rep_iniciativa').value = resultado.id;
@@ -184,8 +189,10 @@ async function enviarReport() {
     responsavel: session.nome,
     mesReferencia: document.getElementById('rep_mes').value,
     status: document.getElementById('rep_status').value,
-    pilarResultado: document.getElementById('rep_pilar').value,
-    valorResultado: document.getElementById('rep_valor').value,
+    etapa: document.getElementById('rep_etapa').value,
+    kpi: document.getElementById('rep_kpi').value,
+    valorAnterior: document.getElementById('rep_valor_anterior').value,
+    valorAtual: document.getElementById('rep_valor_atual').value,
     proximoMarco: document.getElementById('rep_marco').value,
     comentario: document.getElementById('rep_comentario').value
   };
@@ -193,7 +200,8 @@ async function enviarReport() {
   try {
     await callApi('submitReport', payload);
     showMsg('repMsg', 'Report enviado! Isso fica salvo no histórico e alimenta o compilado da conta.', true);
-    document.getElementById('rep_valor').value = '';
+    document.getElementById('rep_valor_anterior').value = '';
+    document.getElementById('rep_valor_atual').value = '';
     document.getElementById('rep_marco').value = '';
     document.getElementById('rep_comentario').value = '';
   } catch (e) {
