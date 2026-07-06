@@ -34,7 +34,9 @@
     <div class="grid cols-2">
       <div>
         <label>Conta</label>
-        <select id="fin_conta"></select>
+        <select id="fin_conta" onchange="carregarIniciativasDaConta()"></select>
+        <label>Iniciativa vinculada (opcional)</label>
+        <select id="fin_iniciativa"><option value="">Sem vínculo — savings geral da conta</option></select>
         <label>Mês de referência</label>
         <input type="text" id="fin_mes" placeholder="Ex: Jul/2026">
       </div>
@@ -51,7 +53,7 @@
     <div class="msg" id="finMsg"></div>
 
     <table style="margin-top:20px;">
-      <thead><tr><th>Data lançamento</th><th>Conta</th><th>Mês Ref.</th><th>Savings</th><th>Automações</th><th>Observação</th></tr></thead>
+      <thead><tr><th>Data lançamento</th><th>Conta</th><th>Iniciativa</th><th>Mês Ref.</th><th>Savings</th><th>Automações</th><th>Observação</th></tr></thead>
       <tbody id="finTbody"></tbody>
     </table>
   </div>
@@ -91,7 +93,7 @@
 
 <script src="app.js"></script>
 <script>
-let session;
+let session, todasIniciativas = [];
 
 async function init() {
   session = requireSession(true);
@@ -104,6 +106,9 @@ async function init() {
   document.getElementById('fin_mes').value = currentMonthRef();
   document.getElementById('apoio_mes').value = currentMonthRef();
 
+  todasIniciativas = await callApi('getIniciativas', { nome: session.nome, isAdmin: true });
+
+  await carregarIniciativasDaConta();
   await carregarFinanceiro();
   await carregarApoio();
 }
@@ -112,9 +117,18 @@ function fillSelect(id, options) {
   document.getElementById(id).innerHTML = options.map(o => `<option value="${o}">${o}</option>`).join('');
 }
 
+function carregarIniciativasDaConta() {
+  const conta = document.getElementById('fin_conta').value;
+  const daConta = todasIniciativas.filter(i => i['Conta'] === conta);
+  const sel = document.getElementById('fin_iniciativa');
+  sel.innerHTML = '<option value="">Sem vínculo — savings geral da conta</option>' +
+    daConta.map(i => `<option value="${i['ID']}">${i['Projeto/Iniciativa']}</option>`).join('');
+}
+
 async function salvarFinanceiro() {
   const payload = {
     conta: document.getElementById('fin_conta').value,
+    idIniciativa: document.getElementById('fin_iniciativa').value,
     mesReferencia: document.getElementById('fin_mes').value,
     savings: document.getElementById('fin_savings').value,
     automacoes: document.getElementById('fin_automacoes').value,
@@ -137,16 +151,19 @@ async function salvarFinanceiro() {
 async function carregarFinanceiro() {
   const dados = await callApi('getFinanceiro');
   dados.sort((a, b) => new Date(b['Timestamp']) - new Date(a['Timestamp']));
-  document.getElementById('finTbody').innerHTML = dados.length ? dados.map(f => `
-    <tr>
+  document.getElementById('finTbody').innerHTML = dados.length ? dados.map(f => {
+    const idIni = f['ID Iniciativa (opcional)'];
+    const ini = todasIniciativas.find(i => i['ID'] === idIni);
+    return `<tr>
       <td>${formatDate(f['Timestamp'])}</td>
       <td>${contaTagHtml(f['Conta'])}</td>
+      <td>${ini ? ini['Projeto/Iniciativa'] : '<span style="color:var(--muted);">geral da conta</span>'}</td>
       <td>${f['Mês Referência'] || ''}</td>
       <td>R$ ${Number(f['Savings (R$)']).toLocaleString('pt-BR')}</td>
       <td>${f['Automações Implantadas'] || '—'}</td>
       <td>${f['Observação'] || ''}</td>
-    </tr>
-  `).join('') : '<tr><td colspan="6" class="empty-state">Nenhum lançamento ainda.</td></tr>';
+    </tr>`;
+  }).join('') : '<tr><td colspan="7" class="empty-state">Nenhum lançamento ainda.</td></tr>';
 }
 
 async function salvarApoio() {

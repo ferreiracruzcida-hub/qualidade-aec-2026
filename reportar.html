@@ -113,15 +113,13 @@ function fillSelect(id, options) {
 }
 
 async function carregarIniciativas() {
-  minhasIniciativas = await callApi('getIniciativas', { nome: session.nome, isAdmin: session.isAdmin });
-  const sel = document.getElementById('rep_iniciativa');
-  if (minhasIniciativas.length === 0) {
-    sel.innerHTML = '<option value="">Nenhuma iniciativa cadastrada ainda — cadastre uma acima</option>';
-    return;
+  try {
+    minhasIniciativas = await callApi('getIniciativas', { nome: session.nome, isAdmin: session.isAdmin });
+    renderIniciativaSelect();
+  } catch (e) {
+    document.getElementById('rep_iniciativa').innerHTML = '<option value="">Erro ao carregar iniciativas</option>';
+    showMsg('repMsg', 'Erro ao carregar iniciativas: ' + e.message, false);
   }
-  sel.innerHTML = minhasIniciativas.map(i =>
-    `<option value="${i['ID']}">${i['Conta']} · ${i['Projeto/Iniciativa']}</option>`
-  ).join('');
 }
 
 async function criarIniciativa() {
@@ -137,15 +135,42 @@ async function criarIniciativa() {
   if (!payload.projeto || !payload.owner) return showMsg('iniMsg', 'Preencha ao menos Projeto e Owner.', false);
 
   try {
-    await callApi('createIniciativa', payload);
-    showMsg('iniMsg', 'Iniciativa cadastrada! Já aparece no report mensal abaixo.', true);
+    const resultado = await callApi('createIniciativa', payload);
+
+    // Atualização otimista: adiciona direto na lista local, sem depender de
+    // uma nova consulta ao servidor (evita a tela travar caso essa segunda
+    // consulta falhe ou demore).
+    minhasIniciativas.push({
+      'ID': resultado.id,
+      'Conta': payload.conta,
+      'Projeto/Iniciativa': payload.projeto,
+      'Problema/Dor': payload.problema,
+      'Objetivo': payload.objetivo,
+      'Owner': payload.owner,
+      'Data de Início': payload.dataInicio,
+      'Pilar Principal': payload.pilar
+    });
+    renderIniciativaSelect();
+    document.getElementById('rep_iniciativa').value = resultado.id;
+
+    showMsg('iniMsg', 'Iniciativa cadastrada! Já está selecionada no report mensal abaixo.', true);
     document.getElementById('ini_projeto').value = '';
     document.getElementById('ini_problema').value = '';
     document.getElementById('ini_objetivo').value = '';
-    await carregarIniciativas();
   } catch (e) {
-    showMsg('iniMsg', 'Erro: ' + e.message, false);
+    showMsg('iniMsg', 'Erro ao cadastrar: ' + e.message, false);
   }
+}
+
+function renderIniciativaSelect() {
+  const sel = document.getElementById('rep_iniciativa');
+  if (minhasIniciativas.length === 0) {
+    sel.innerHTML = '<option value="">Nenhuma iniciativa cadastrada ainda — cadastre uma acima</option>';
+    return;
+  }
+  sel.innerHTML = minhasIniciativas.map(i =>
+    `<option value="${i['ID']}">${i['Conta']} · ${i['Projeto/Iniciativa']}</option>`
+  ).join('');
 }
 
 async function enviarReport() {

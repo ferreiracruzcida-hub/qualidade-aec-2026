@@ -70,7 +70,7 @@
       <label>Escolha a conta</label>
       <select id="contaSelect" onchange="renderDetalheConta()"></select>
       <table style="margin-top:10px;">
-        <thead><tr><th>Iniciativa</th><th>Owner</th><th>Status</th><th>Último resultado</th></tr></thead>
+        <thead><tr><th>Iniciativa</th><th>Owner</th><th>Status</th><th>Último resultado</th><th>Savings vinculado</th></tr></thead>
         <tbody id="detalheTbody"></tbody>
       </table>
     </div>
@@ -210,6 +210,7 @@ function renderDetalheConta() {
       <td>${i.owner}</td>
       <td>${statusPillHtml(i.statusAtual)}</td>
       <td>${i.ultimoResultado || '—'}</td>
+      <td>${i.savingsVinculado ? 'R$ ' + i.savingsVinculado.toLocaleString('pt-BR') : '—'}</td>
     </tr>
   `).join('');
 }
